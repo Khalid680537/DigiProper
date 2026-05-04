@@ -113,50 +113,51 @@ git checkout "$DEPLOY_BASE_BRANCH"
 git pull origin "$DEPLOY_BASE_BRANCH"
 ok "Local $DEPLOY_BASE_BRANCH up to date."
 
-# ---- remote deploy ----
-confirm "SSH to ${DEPLOY_USER}@${DEPLOY_HOST} and deploy now?" || { echo "Skipped remote deploy. Local main is synced; run again with --yes when ready."; exit 0; }
+# ---- remote deploy via cPanel Git Version Control ----
+# External SSH is firewall-blocked on this MilesWeb account, so the server-side
+# deploy is triggered through cPanel's Git Version Control + .cpanel.yml hook.
+# Two trigger modes:
+#   1. CPANEL_API_TOKEN set in .env.deploy → curl the cPanel UAPI to pull + run .cpanel.yml automatically.
+#   2. No token → print the cPanel URL and tell the user to click "Update from Remote".
 
-step "Deploying to ${DEPLOY_USER}@${DEPLOY_HOST}:${DEPLOY_PATH}"
+CPANEL_HOST="${CPANEL_HOST:-utopia.herosite.pro}"
+CPANEL_PORT="${CPANEL_PORT:-2083}"
+CPANEL_USER="${CPANEL_USER:-$DEPLOY_USER}"
 
-# Heredoc executed on the remote. Variables expanded LOCALLY are interpolated below;
-# remote-only vars are escaped with \$.
-ssh -o StrictHostKeyChecking=accept-new "${DEPLOY_USER}@${DEPLOY_HOST}" bash -s <<REMOTE
-set -euo pipefail
+cpanel_api() {
+  local endpoint="$1"
+  curl -sS -k \
+    -H "Authorization: cpanel ${CPANEL_USER}:${CPANEL_API_TOKEN}" \
+    "https://${CPANEL_HOST}:${CPANEL_PORT}${endpoint}"
+}
 
-cd "${DEPLOY_PATH}" || { echo "DEPLOY_PATH not found on server: ${DEPLOY_PATH}"; exit 1; }
+if [ -n "${CPANEL_API_TOKEN:-}" ]; then
+  confirm "Trigger cPanel Git pull + deploy now via API?" || { echo "Skipped. Local main is synced; trigger manually in cPanel when ready."; exit 0; }
 
-echo "→ git fetch + hard reset to origin/${DEPLOY_BASE_BRANCH}"
-git fetch --all --prune
-git reset --hard "origin/${DEPLOY_BASE_BRANCH}"
+  step "cPanel: pulling origin/${DEPLOY_BASE_BRANCH} into ${DEPLOY_PATH}"
+  PULL_RESP=$(cpanel_api "/execute/VersionControl/update?repository_root=${DEPLOY_PATH}&branch=${DEPLOY_BASE_BRANCH}")
+  echo "$PULL_RESP" | grep -q '"status":1' || { echo "$PULL_RESP"; fail "cPanel git pull failed."; }
+  ok "cPanel pulled latest."
 
-if [ "${ENABLE_MAINTENANCE_MODE}" = "1" ]; then
-  echo "→ artisan down"
-  ${REMOTE_PHP} artisan down --retry=15 || true
+  step "cPanel: running .cpanel.yml deploy hook"
+  DEPLOY_RESP=$(cpanel_api "/execute/VersionControlDeployment/create?repository_root=${DEPLOY_PATH}")
+  echo "$DEPLOY_RESP" | grep -q '"status":1' || { echo "$DEPLOY_RESP"; fail "cPanel deploy task failed."; }
+  ok "cPanel deploy task queued. Tail the log in: cPanel → Git Version Control → DigiProper → Manage → Pull or Deploy."
+else
+  CPANEL_GITVC_URL="https://${CPANEL_HOST}:${CPANEL_PORT}/cpsess/frontend/jupiter/version_control/index.html"
+  echo
+  echo "──────────────────────────────────────────────────────────────────"
+  echo "  Local side done. Now trigger the server-side deploy:"
+  echo "  → Open cPanel: $CPANEL_GITVC_URL"
+  echo "  → Find DigiProper → click Manage → 'Update from Remote'"
+  echo "  → Then click 'Deploy HEAD Commit' (runs .cpanel.yml)"
+  echo
+  echo "  To automate this step: add CPANEL_API_TOKEN to .env.deploy"
+  echo "  (cPanel → Manage API Tokens → Generate)."
+  echo "──────────────────────────────────────────────────────────────────"
+  exit 0
 fi
-
-echo "→ composer install (no-dev)"
-${REMOTE_COMPOSER} install --no-dev --optimize-autoloader --no-interaction --prefer-dist
-
-echo "→ artisan migrate --force"
-${REMOTE_PHP} artisan migrate --force
-
-echo "→ caches"
-${REMOTE_PHP} artisan config:cache
-${REMOTE_PHP} artisan route:cache
-${REMOTE_PHP} artisan view:cache
-${REMOTE_PHP} artisan event:cache
-
-echo "→ queue restart"
-${REMOTE_PHP} artisan queue:restart || true
-
-if [ "${ENABLE_MAINTENANCE_MODE}" = "1" ]; then
-  echo "→ artisan up"
-  ${REMOTE_PHP} artisan up
-fi
-
-echo "→ done on remote."
-REMOTE
 
 ok "Deployed."
 echo
-echo "Live: https://${DEPLOY_HOST}/  (or your real domain)"
+echo "Live: https://${CPANEL_HOST/utopia.herosite.pro/digiproper.com}/"
