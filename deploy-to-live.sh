@@ -105,10 +105,10 @@ else
 fi
 
 confirm "Merge PR #$PR_NUMBER into $DEPLOY_BASE_BRANCH now?" || fail "Aborted before merge."
-gh pr merge "$PR_NUMBER" --merge --delete-branch || fail "PR merge failed (check CI / merge conflicts)."
+gh pr merge "$PR_NUMBER" --merge || fail "PR merge failed (check CI / merge conflicts)."
 ok "PR #$PR_NUMBER merged."
 
-# ---- sync local main ----
+# ---- sync local main (then return to feature branch) ----
 step "Syncing local $DEPLOY_BASE_BRANCH"
 git checkout "$DEPLOY_BASE_BRANCH"
 git pull origin "$DEPLOY_BASE_BRANCH"
@@ -158,5 +158,10 @@ echo "→ done on remote."
 REMOTE
 
 ok "Deployed."
+
+# ---- return to the feature branch you started on ----
+step "Switching back to $CURRENT_BRANCH"
+git checkout "$CURRENT_BRANCH" 2>/dev/null && ok "Back on $CURRENT_BRANCH." || echo "(Could not return to $CURRENT_BRANCH — staying on $DEPLOY_BASE_BRANCH.)"
+
 echo
 echo "Live: https://digiproper.com/"
