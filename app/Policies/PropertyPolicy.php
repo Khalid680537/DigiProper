@@ -14,7 +14,7 @@ class PropertyPolicy
 
     public function view(User $user, Property $property): bool
     {
-        return $property->created_by === $user->id;
+        return (int) $property->created_by === (int) $user->id;
     }
 
     public function create(User $user): bool
@@ -24,21 +24,21 @@ class PropertyPolicy
 
     public function update(User $user, Property $property): bool
     {
-        return $property->created_by === $user->id;
+        return (int) $property->created_by === (int) $user->id;
     }
 
     public function delete(User $user, Property $property): bool
     {
-        return $property->created_by === $user->id;
+        return (int) $property->created_by === (int) $user->id;
     }
 
     public function restore(User $user, Property $property): bool
     {
-        return $property->created_by === $user->id;
+        return (int) $property->created_by === (int) $user->id;
     }
 
     public function forceDelete(User $user, Property $property): bool
     {
-        return $property->created_by === $user->id;
+        return (int) $property->created_by === (int) $user->id;
     }
 }
