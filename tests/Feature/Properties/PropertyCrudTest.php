@@ -9,13 +9,52 @@ test('unauthenticated users are redirected from the properties index', function 
 
 test('the properties index renders and shows existing properties', function () {
     $user = User::factory()->create();
+    $this->actingAs($user);
     Property::factory()->create(['name' => 'SGTN 1', 'city' => 'New Delhi']);
 
-    $this->actingAs($user)
-        ->get(route('properties.index'))
+    $this->get(route('properties.index'))
         ->assertOk()
         ->assertSeeText('SGTN 1')
         ->assertSeeText('New Delhi');
+});
+
+test("a user cannot see another user's properties on the index", function () {
+    $alice = User::factory()->create();
+    $bob = User::factory()->create();
+
+    $this->actingAs($alice);
+    Property::factory()->create(['name' => 'Alice Asset']);
+
+    $this->actingAs($bob);
+    Property::factory()->create(['name' => 'Bob Asset']);
+
+    $this->actingAs($alice)
+        ->get(route('properties.index'))
+        ->assertOk()
+        ->assertSeeText('Alice Asset')
+        ->assertDontSeeText('Bob Asset');
+
+    $this->actingAs($bob)
+        ->get(route('properties.index'))
+        ->assertOk()
+        ->assertSeeText('Bob Asset')
+        ->assertDontSeeText('Alice Asset');
+});
+
+test("a user gets a 404 when viewing, editing, updating, or deleting another user's property", function () {
+    $alice = User::factory()->create();
+    $bob = User::factory()->create();
+
+    $this->actingAs($alice);
+    $aliceProperty = Property::factory()->create(['name' => 'Alice Asset']);
+
+    $this->actingAs($bob);
+    $this->get(route('properties.show', $aliceProperty))->assertNotFound();
+    $this->get(route('properties.edit', $aliceProperty))->assertNotFound();
+    $this->patch(route('properties.update', $aliceProperty), ['name' => 'Hijacked'])->assertNotFound();
+    $this->delete(route('properties.destroy', $aliceProperty))->assertNotFound();
+
+    expect($aliceProperty->fresh()->name)->toBe('Alice Asset');
 });
 
 test('the create form renders', function () {
@@ -24,7 +63,7 @@ test('the create form renders', function () {
     $this->actingAs($user)
         ->get(route('properties.create'))
         ->assertOk()
-        ->assertSee('New property');
+        ->assertSee('Add a new property');
 });
 
 test('storing a property persists it and redirects to show', function () {
@@ -72,34 +111,34 @@ test('store validation rejects missing name', function () {
 
 test('the show page renders the property summary', function () {
     $user = User::factory()->create();
+    $this->actingAs($user);
     $property = Property::factory()->create([
         'name' => 'SGTN 2',
         'imputed_value_inr' => 15000000,
     ]);
 
-    $this->actingAs($user)
-        ->get(route('properties.show', $property))
+    $this->get(route('properties.show', $property))
         ->assertOk()
         ->assertSeeText('SGTN 2')
-        ->assertSee('Summary');
+        ->assertSee('Financials');
 });
 
 test('the edit form prefills existing data', function () {
     $user = User::factory()->create();
+    $this->actingAs($user);
     $property = Property::factory()->create(['name' => 'Original Name']);
 
-    $this->actingAs($user)
-        ->get(route('properties.edit', $property))
+    $this->get(route('properties.edit', $property))
         ->assertOk()
         ->assertSee('value="Original Name"', false);
 });
 
 test('updating a property persists changes and redirects', function () {
     $user = User::factory()->create();
+    $this->actingAs($user);
     $property = Property::factory()->create(['name' => 'Old Name']);
 
-    $this->actingAs($user)
-        ->patch(route('properties.update', $property), ['name' => 'New Name'])
+    $this->patch(route('properties.update', $property), ['name' => 'New Name'])
         ->assertRedirect(route('properties.show', $property))
         ->assertSessionHas('status', 'property-updated');
 
@@ -109,10 +148,10 @@ test('updating a property persists changes and redirects', function () {
 
 test('destroying a property soft-deletes it', function () {
     $user = User::factory()->create();
+    $this->actingAs($user);
     $property = Property::factory()->create();
 
-    $this->actingAs($user)
-        ->delete(route('properties.destroy', $property))
+    $this->delete(route('properties.destroy', $property))
         ->assertRedirect(route('properties.index'))
         ->assertSessionHas('status', 'property-deleted');
 
