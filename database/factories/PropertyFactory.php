@@ -46,14 +46,6 @@ class PropertyFactory extends Factory
             'rent_yearly_inr' => fake()->numberBetween(0, 50) * 100_000,
             'yield_percent' => null,
 
-            'contacts' => [
-                [
-                    'name' => fake()->name(),
-                    'phone' => '+91'.fake()->numerify('##########'),
-                    'role' => fake()->randomElement(['Consultant', 'Manager', 'Field Officer']),
-                    'notes' => null,
-                ],
-            ],
             'keys_location' => fake()->optional()->streetAddress(),
             'extra_notes' => fake()->optional()->sentence(),
             'is_data_complete' => false,

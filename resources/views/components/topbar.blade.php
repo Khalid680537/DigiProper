@@ -11,8 +11,13 @@
     </div>
 
     <div class="flex items-center gap-2">
-        {{-- Search affordance (visual only for v1) --}}
-        <button type="button" class="hidden lg:inline-flex items-center gap-2 px-3 py-1.5 rounded-xl bg-surface-100 dark:bg-gray-800 ring-1 ring-ink-100 dark:ring-ink-700 text-xs text-ink-500 dark:text-ink-400 hover:bg-surface-200 dark:hover:bg-gray-700 transition">
+        {{-- Search trigger — opens the global command palette --}}
+        <button
+            type="button"
+            x-data
+            x-on:click="$dispatch('open-command-palette')"
+            class="hidden lg:inline-flex items-center gap-2 px-3 py-1.5 rounded-xl bg-surface-100 dark:bg-gray-800 ring-1 ring-ink-100 dark:ring-ink-700 text-xs text-ink-500 dark:text-ink-400 hover:bg-surface-200 dark:hover:bg-gray-700 transition"
+        >
             <x-icon name="search" class="h-3.5 w-3.5" />
             <span>Search</span>
             <kbd class="ml-2 px-1.5 py-0.5 rounded bg-white dark:bg-gray-900 ring-1 ring-ink-200 dark:ring-ink-700 text-[10px] font-semibold text-ink-600 dark:text-ink-300">⌘K</kbd>

@@ -31,7 +31,6 @@ use Illuminate\Database\Eloquent\SoftDeletes;
     'imputed_value_inr',
     'rent_yearly_inr',
     'yield_percent',
-    'contacts',
     'keys_location',
     'extra_notes',
     'is_data_complete',
@@ -56,7 +55,6 @@ class Property extends Model
     protected function casts(): array
     {
         return [
-            'contacts' => 'array',
             'is_data_complete' => 'boolean',
         ];
     }
@@ -67,6 +65,14 @@ class Property extends Model
     public function documents(): HasMany
     {
         return $this->hasMany(PropertyDocument::class);
+    }
+
+    /**
+     * @return HasMany<PropertyContact, $this>
+     */
+    public function contacts(): HasMany
+    {
+        return $this->hasMany(PropertyContact::class)->orderBy('position');
     }
 
     /**

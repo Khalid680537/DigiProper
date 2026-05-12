@@ -4,6 +4,7 @@ use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\PropertyController;
 use App\Http\Controllers\PropertyDocumentController;
+use App\Http\Controllers\SearchController;
 use Illuminate\Support\Facades\Route;
 
 require __DIR__.'/auth.php';
@@ -12,6 +13,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/', fn () => redirect()->route('dashboard'));
 
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
+
+    Route::get('/search', [SearchController::class, 'index'])->name('search');
 
     Route::resource('properties', PropertyController::class);
 

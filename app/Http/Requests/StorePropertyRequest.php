@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests;
 
+use App\Models\Property;
 use App\Support\IndianStates;
 use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
@@ -11,7 +12,7 @@ class StorePropertyRequest extends FormRequest
 {
     public function authorize(): bool
     {
-        return $this->user() !== null;
+        return $this->user()?->can('create', Property::class) ?? false;
     }
 
     /**
