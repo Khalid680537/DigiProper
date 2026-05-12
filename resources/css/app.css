@@ -1,32 +1,119 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import "tailwindcss";
+@plugin "@tailwindcss/forms";
+
+@source "../../vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php";
+@source "../../storage/framework/views/*.php";
+@source "../views/**/*.blade.php";
+
+@theme {
+    --font-sans: "Figtree", ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif;
+
+    /* Brand purple */
+    --color-primary-50:  #f3f0fb;
+    --color-primary-100: #e6dcf5;
+    --color-primary-200: #cab9ec;
+    --color-primary-300: #ad8fe1;
+    --color-primary-400: #8e62d3;
+    --color-primary-500: #684ed3;
+    --color-primary-600: #4b2fbf;
+    --color-primary-700: #3d1da5;
+    --color-primary-800: #2f1485;
+    --color-primary-900: #251066;
+    --color-primary-950: #160641;
+
+    /* Warm peach accent */
+    --color-accent-50:  #fdf3ef;
+    --color-accent-100: #fbe1d5;
+    --color-accent-200: #f6c3b0;
+    --color-accent-300: #f0a18a;
+    --color-accent-400: #df927f;
+    --color-accent-500: #d77762;
+    --color-accent-600: #c25c47;
+    --color-accent-700: #a44535;
+    --color-accent-800: #87382c;
+    --color-accent-900: #6f2f26;
+    --color-accent-950: #3d160f;
+
+    /* Neutral ink */
+    --color-ink-50:  #f7f7fb;
+    --color-ink-100: #eeedf4;
+    --color-ink-200: #dcdae6;
+    --color-ink-300: #b9b6cc;
+    --color-ink-400: #8e8aaa;
+    --color-ink-500: #67638a;
+    --color-ink-600: #4d496e;
+    --color-ink-700: #3a3756;
+    --color-ink-800: #26243b;
+    --color-ink-900: #161525;
+    --color-ink-950: #0c0b18;
+
+    /* Surface backgrounds */
+    --color-surface-50:  #fbfaff;
+    --color-surface-100: #f4f1fb;
+    --color-surface-200: #ebe6f5;
+
+    /* Hero gradients */
+    --background-image-hero-purple: linear-gradient(135deg, #4b2fbf 0%, #684ed3 50%, #3d1da5 100%);
+    --background-image-hero-warm:   linear-gradient(135deg, #4b2fbf 0%, #684ed3 45%, #d77762 100%);
+    --background-image-hero-night:  linear-gradient(135deg, #3d1da5 0%, #160641 100%);
+
+    /* Radius ladder */
+    --radius-4xl: 2rem;
+    --radius-5xl: 2.5rem;
+
+    /* Shadow scale */
+    --shadow-soft:      0 1px 2px rgba(22, 6, 65, 0.04), 0 4px 16px rgba(22, 6, 65, 0.06);
+    --shadow-soft-lg:   0 4px 12px rgba(22, 6, 65, 0.06), 0 16px 48px rgba(22, 6, 65, 0.10);
+    --shadow-glow:      0 8px 32px -8px rgba(104, 78, 211, 0.45);
+    --shadow-glow-sm:   0 4px 16px -4px rgba(104, 78, 211, 0.35);
+    --shadow-inset-ring: inset 0 0 0 1px rgba(22, 6, 65, 0.06);
+
+    /* Easings */
+    --ease-spring: cubic-bezier(0.22, 1.2, 0.36, 1);
+
+    /* Animations */
+    --animate-fade-up:   fade-up 0.4s ease-out both;
+    --animate-shimmer:   shimmer 1.4s linear infinite;
+    --animate-pulse-dot: pulse-dot 1.6s ease-in-out infinite;
+}
+
+@keyframes fade-up {
+    0%   { opacity: 0; transform: translateY(8px); }
+    100% { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes shimmer {
+    100% { transform: translateX(100%); }
+}
+
+@keyframes pulse-dot {
+    0%, 100% { opacity: 1; }
+    50%      { opacity: 0.4; }
+}
 
 [x-cloak] { display: none !important; }
 
-@layer utilities {
-    .scrollbar-hide {
-        -ms-overflow-style: none;
-        scrollbar-width: none;
-    }
-    .scrollbar-hide::-webkit-scrollbar {
-        display: none;
-    }
+@utility scrollbar-hide {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
 
-    .gradient-text {
-        background: linear-gradient(135deg, #684ed3 0%, #d77762 100%);
-        -webkit-background-clip: text;
-        background-clip: text;
-        color: transparent;
+    &::-webkit-scrollbar {
+        display: none;
     }
 }
 
-@layer components {
-    .shimmer-overlay {
-        position: relative;
-        overflow: hidden;
-    }
-    .shimmer-overlay::after {
+@utility gradient-text {
+    background: linear-gradient(135deg, #684ed3 0%, #d77762 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+}
+
+@utility shimmer-overlay {
+    position: relative;
+    overflow: hidden;
+
+    &::after {
         content: '';
         position: absolute;
         inset: 0;

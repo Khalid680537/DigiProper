@@ -33,6 +33,9 @@ class PropertyDocumentController extends Controller
     public function show(Property $property, PropertyDocument $document): StreamedResponse
     {
         abort_unless($document->property_id === $property->id, 404);
+
+        $this->authorize('view', $document);
+
         abort_unless(Storage::disk('local')->exists($document->file_path), 404);
 
         return Storage::disk('local')->download($document->file_path, $document->original_name);
@@ -41,6 +44,8 @@ class PropertyDocumentController extends Controller
     public function destroy(Property $property, PropertyDocument $document): RedirectResponse
     {
         abort_unless($document->property_id === $property->id, 404);
+
+        $this->authorize('delete', $document);
 
         $document->delete();
 

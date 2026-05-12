@@ -1,19 +1,18 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Api\V1;
 
-use App\Http\Requests\StorePropertyRequest;
-use App\Http\Requests\UpdatePropertyRequest;
+use App\Http\Controllers\Controller;
+use App\Http\Requests\Api\V1\StorePropertyRequest;
+use App\Http\Resources\V1\PropertyResource;
 use App\Models\Property;
-use Illuminate\Contracts\Pagination\LengthAwarePaginator;
-use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Redirect;
-use Illuminate\View\View;
+use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 
 class PropertyController extends Controller
 {
-    public function index(Request $request): View
+    public function index(Request $request): AnonymousResourceCollection
     {
         $this->authorize('viewAny', Property::class);
 
@@ -28,25 +27,10 @@ class PropertyController extends Controller
             });
         }
 
-        /** @var LengthAwarePaginator $properties */
-        $properties = $query->paginate(20)->withQueryString();
-
-        return view('properties.index', [
-            'properties' => $properties,
-            'q' => $q,
-        ]);
+        return PropertyResource::collection($query->paginate(20));
     }
 
-    public function create(): View
-    {
-        $this->authorize('create', Property::class);
-
-        return view('properties.create', [
-            'property' => new Property,
-        ]);
-    }
-
-    public function store(StorePropertyRequest $request): RedirectResponse
+    public function store(StorePropertyRequest $request): JsonResponse
     {
         $validated = $request->validated();
         $contacts = $validated['contacts'] ?? [];
@@ -54,51 +38,44 @@ class PropertyController extends Controller
 
         $property = Property::create($validated);
         $this->syncContacts($property, $contacts);
+        $property->load(['contacts', 'documents']);
 
-        return Redirect::route('properties.show', $property)->with('status', 'property-created');
+        return PropertyResource::make($property)
+            ->response()
+            ->setStatusCode(201);
     }
 
-    public function show(Property $property): View
+    public function show(Property $property): PropertyResource
     {
         $this->authorize('view', $property);
 
-        $property->load(['documents' => fn ($q) => $q->latest(), 'contacts', 'creator', 'updater']);
+        $property->load(['contacts', 'documents']);
 
-        return view('properties.show', [
-            'property' => $property,
-        ]);
+        return PropertyResource::make($property);
     }
 
-    public function edit(Property $property): View
+    public function update(StorePropertyRequest $request, Property $property): PropertyResource
     {
         $this->authorize('update', $property);
 
-        $property->load('contacts');
-
-        return view('properties.edit', [
-            'property' => $property,
-        ]);
-    }
-
-    public function update(UpdatePropertyRequest $request, Property $property): RedirectResponse
-    {
         $validated = $request->validated();
         $contacts = $validated['contacts'] ?? [];
         unset($validated['contacts']);
 
         $property->update($validated);
         $this->syncContacts($property, $contacts);
+        $property->load(['contacts', 'documents']);
 
-        return Redirect::route('properties.show', $property)->with('status', 'property-updated');
+        return PropertyResource::make($property);
     }
 
-    public function destroy(Property $property): RedirectResponse
+    public function destroy(Property $property): JsonResponse
     {
         $this->authorize('delete', $property);
 
         $property->delete();
 
-        return Redirect::route('properties.index')->with('status', 'property-deleted');
+        return response()->json(null, 204);
     }
 
     /**
