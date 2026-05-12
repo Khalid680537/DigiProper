@@ -52,5 +52,9 @@
         </div>
 
         <x-bottom-nav class="md:hidden" />
+
+        @auth
+            <x-command-palette />
+        @endauth
     </body>
 </html>
