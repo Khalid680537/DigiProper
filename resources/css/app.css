@@ -21,18 +21,18 @@
     --color-primary-900: #251066;
     --color-primary-950: #160641;
 
-    /* Warm peach accent */
-    --color-accent-50:  #fdf3ef;
-    --color-accent-100: #fbe1d5;
-    --color-accent-200: #f6c3b0;
-    --color-accent-300: #f0a18a;
-    --color-accent-400: #df927f;
-    --color-accent-500: #d77762;
-    --color-accent-600: #c25c47;
-    --color-accent-700: #a44535;
-    --color-accent-800: #87382c;
-    --color-accent-900: #6f2f26;
-    --color-accent-950: #3d160f;
+    /* Claude-orange accent */
+    --color-accent-50:  #fdf4ee;
+    --color-accent-100: #fae6d4;
+    --color-accent-200: #f5cba6;
+    --color-accent-300: #eea776;
+    --color-accent-400: #e08855;
+    --color-accent-500: #d97757;
+    --color-accent-600: #c15f3c;
+    --color-accent-700: #9c4a2a;
+    --color-accent-800: #763820;
+    --color-accent-900: #572a18;
+    --color-accent-950: #371810;
 
     /* Neutral ink */
     --color-ink-50:  #f7f7fb;
@@ -54,7 +54,7 @@
 
     /* Hero gradients */
     --background-image-hero-purple: linear-gradient(135deg, #4b2fbf 0%, #684ed3 50%, #3d1da5 100%);
-    --background-image-hero-warm:   linear-gradient(135deg, #4b2fbf 0%, #684ed3 45%, #d77762 100%);
+    --background-image-hero-warm:   linear-gradient(135deg, #4b2fbf 0%, #684ed3 45%, #d97757 100%);
     --background-image-hero-night:  linear-gradient(135deg, #3d1da5 0%, #160641 100%);
 
     /* Radius ladder */
@@ -103,7 +103,7 @@
 }
 
 @utility gradient-text {
-    background: linear-gradient(135deg, #684ed3 0%, #d77762 100%);
+    background: linear-gradient(135deg, #684ed3 0%, #d97757 100%);
     -webkit-background-clip: text;
     background-clip: text;
     color: transparent;
