@@ -21,6 +21,10 @@
     <div aria-hidden="true" class="pointer-events-none absolute -top-16 -right-16 h-64 w-64 rounded-full bg-white/10 blur-3xl"></div>
     <div aria-hidden="true" class="pointer-events-none absolute -bottom-16 -left-10 h-48 w-48 rounded-full bg-white/10 blur-3xl"></div>
 
+    {{-- Faint brand watermark --}}
+    <x-application-logo aria-hidden="true"
+        class="pointer-events-none absolute top-5 right-5 sm:top-6 sm:right-6 h-12 w-12 sm:h-16 sm:w-16 text-white/10 fill-current" />
+
     <div class="relative">
         @if ($slot->isNotEmpty())
             {{ $slot }}

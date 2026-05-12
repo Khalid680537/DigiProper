@@ -25,6 +25,15 @@
             <div class="flex-1 flex flex-col min-w-0">
                 <x-topbar class="hidden md:flex" :title="$title ?? null" />
 
+                {{-- Mobile-only brand header --}}
+                <a href="{{ route('dashboard') }}"
+                   class="md:hidden sticky top-0 z-30 flex items-center gap-3 h-14 px-4 bg-white/90 dark:bg-gray-900/90 backdrop-blur-md border-b border-ink-100 dark:border-ink-800">
+                    <span class="h-8 w-8 rounded-lg bg-hero-purple flex items-center justify-center shadow-glow-sm ring-1 ring-white/20">
+                        <x-application-logo class="h-4 w-4 fill-current text-white" />
+                    </span>
+                    <span class="font-extrabold text-base tracking-tight text-ink-900 dark:text-ink-50">DigiProper</span>
+                </a>
+
                 {{-- Mobile-only legacy header slot (deprecated; pages should use <x-page-hero>) --}}
                 @isset($header)
                     <header class="md:hidden bg-white dark:bg-gray-900 shadow-soft">
