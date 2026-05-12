@@ -1,68 +1,137 @@
-# DigiProper
+# CLAUDE.md
 
-Property management platform for Indian property owners. Web + mobile, sharing one Laravel JSON API.
+This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
-## Repo layout
+## DigiProper
 
-- `/` — Laravel app (web UI + JSON API)
-- `/mobile/` — Expo / React Native app (to be scaffolded). Until it exists, ignore mobile-specific instructions below.
+Property management platform for Indian property owners. Currently a Laravel 13 web app (Blade + Tailwind + Alpine). A mobile app and JSON API are planned but not yet built.
 
-## Stack
+## What exists vs. what doesn't
 
-**Backend / API**
-- Laravel 13, PHP 8.3
-- Pest 4 for tests, Pint for formatting
-- Breeze (web sessions), Sanctum (mobile token auth)
-- Laravel Boost (dev tooling for AI agents)
-- DB: SQLite for dev → Postgres or MySQL for prod (TBD)
+Be honest about reality when reasoning about the codebase:
 
-**Web**
-- Vite 8, Tailwind, Alpine.js, Blade
+- **Built**: Web UI (Blade), Google OAuth sign-in (Socialite), Property CRUD with documents, Dashboard summary, global ⌘K command palette, multi-tenant isolation via global owner scope.
+- **Not built**: `/mobile/` directory, `routes/api.php`, Sanctum tokens, any `/api/v1/*` endpoint, policies, jobs, queues in use, service/action layer. The only JSON endpoint is `GET /search` (powers the command palette).
 
-**Mobile**
-- Expo SDK + React Native (TypeScript, strict mode)
-- Expo Router (file-based routing)
-- React Navigation, TanStack Query
-- `expo-secure-store` for auth tokens — never AsyncStorage
+When asked to add something API- or mobile-shaped, surface that nothing exists yet and confirm the approach before scaffolding.
 
-## API conventions
+## Commands
 
-- Routes prefixed `/api/v1/` in `routes/api.php`
-- JSON responses via Eloquent API Resources
-- Auth: Sanctum personal access tokens for mobile, Breeze sessions for web
-- Pagination: Laravel default (`?page=`), 20/page unless overridden
-- Errors: standard Laravel JSON shape (`{message, errors}`)
-- Mobile reads `EXPO_PUBLIC_API_URL` from `app.config.ts`
+- `composer dev` — concurrent dev: `artisan serve` + `queue:listen` + `pail` + `vite`. Default entry point.
+- `composer setup` — fresh install (install, key:generate, migrate, npm install, npm run build).
+- `./vendor/bin/pest` (or `composer test`) — run the full Pest suite.
+- `php artisan test --compact --filter=PropertyCrudTest` — run a single test.
+- `vendor/bin/pint --dirty --format agent` — format dirty PHP files before declaring backend work done.
+- `npm run dev` / `npm run build` — Vite dev server / production bundle.
+
+## Architectural invariants
+
+These are easy to break without noticing. Do not violate without an explicit reason.
+
+- **Global owner scope on `Property`** — every `Property::query()` (including `all()`, `find()`, eager loads) is auto-filtered to the current `auth()->id()`'s rows via a global scope set on the model. Don't add per-controller `where('created_by', …)` on top; don't reach for `withoutGlobalScopes()` casually. New per-user models should follow the same pattern, not re-implement filtering in controllers.
+- **`HasAudit` trait** (`app/Models/Concerns/HasAudit.php`) — auto-populates `created_by` / `updated_by` / `deleted_by` from `auth()->id()` on model events. `deleted_by` is written via a second update inside the `deleting` event (Eloquent doesn't fire on the soft-delete touch otherwise). Apply this trait to any new audited model and add the matching columns via `$table->auditUsers()` in the migration (already a custom Blueprint macro used by the existing migrations).
+- **Soft deletes** on `Property` and `PropertyDocument`. Hard-delete only with intent.
+- **No service / action / job layer.** Controllers do CRUD directly; that's the current convention. Don't introduce abstraction layers without approval.
+- **OAuth tokens are encrypted at rest** (`OauthAccount`'s `access_token` / `refresh_token` use the `encrypted` cast and are in `$hidden`). Never log them, never serialize the model into a log line.
+- **Prefer normalized child tables over JSON columns** for new structured/PII data. `Property.contacts` is a legacy JSON column; new collections should be modelled as separate tables with per-field encryption where PII is involved.
+
+## Auth
+
+- **Web**: Laravel Breeze sessions. Auth routes in `routes/auth.php`.
+- **Google OAuth**: Socialite, wired through `app/Http/Controllers/Auth/GoogleAuthController.php`. Routes: `GET /auth/google/redirect`, `GET /auth/google/callback`. Linkage stored in `oauth_accounts` table (one row per provider per user).
+- **Local dev OAuth quirk**: Google rejects `.test` TLDs in OAuth redirect URIs. Local dev must run on `http://localhost:8000` for the OAuth flow to work end-to-end.
+- **No Sanctum, no token guard, no API auth.** When the API is built, decide between Sanctum (personal access tokens) and Passport explicitly.
+
+## Domain model
+
+- `User` ←hasMany→ `OauthAccount` — Google linkage; tokens encrypted, hidden.
+- `User` ←hasMany→ `Property` — enforced by the global owner scope, not a FK relation traversal.
+- `Property` ←hasMany→ `PropertyDocument` — FK with `cascadeOnDelete`; both sides soft-deleted.
+- `Property` carries: address (line1/line2/city/state/pincode), tenure & tenant info, area + unit, financials (`imputed_value_inr`, `rent_yearly_inr`, `yield_percent` — all decimal), JSON `contacts`, `keys_location`, optional RERA number, `is_data_complete` flag. Source of truth: `database/migrations/2026_05_12_175432_create_properties_table.php`.
+- `Property::effectiveYieldPercent` — computed accessor; returns `yield_percent` if set, otherwise derives from `rent_yearly_inr / imputed_value_inr`. Use it for display; don't recompute in views.
+- `app/Support/IndianStates.php` — canonical list of state codes. Reuse for state validation and dropdowns.
+
+## Validation
+
+Validation lives in form requests, not in controllers. Always extend the existing pattern:
+
+- `app/Http/Requests/StorePropertyRequest.php`
+- `app/Http/Requests/UpdatePropertyRequest.php`
+- `app/Http/Requests/StorePropertyDocumentRequest.php`
+
+Authorization currently just checks `$this->user() !== null`; tightening is a deliberate future change (introduce policies then), not something to add ad-hoc.
+
+## UI system
+
+Blade + Tailwind + Alpine. The design system is intentional — reuse tokens and components instead of inventing one-off styles.
+
+**Color tokens** (`tailwind.config.js`):
+- `primary-*` — brand purple. CTAs, focus rings, nav highlights.
+- `accent-*` — warm peach. Secondary highlights, stat-card tints.
+- `ink-*` — neutral text (dark-mode aware). Use these instead of `gray-*`.
+- `surface-*` — ultra-light backgrounds.
+
+**Hero gradients**: `bg-hero-purple` (default), `bg-hero-warm`, `bg-hero-night`. Heroes stay **single-hue purple** by default — no purple-to-peach bleeds on big hero surfaces.
+
+**Shadow scale**: `shadow-soft` (cards) → `shadow-soft-lg` (elevated) → `shadow-glow` / `shadow-glow-sm` (purple-glow CTAs).
+
+**Radius ladder**: `rounded-xl` (inputs/buttons) → `rounded-2xl` (cards) → `rounded-3xl` (heroes, section-cards).
+
+**Font**: Figtree (loaded from bunny.net in layouts).
+
+**Reuse, don't invent.** Component library lives in `resources/views/components/`:
+
+- `<x-section-card title="…" icon="…">` — grouped content block.
+- `<x-stat-card label="…" value="…" tint="primary|accent|emerald|sky|neutral">` — KPI tile.
+- `<x-page-hero tone="purple|warm|night">` — page header.
+- `<x-primary-button>` / `<x-secondary-button>` / `<x-danger-button>` / `<x-icon-button tone="ghost|primary|danger">`.
+- `<x-text-input>` / `<x-textarea>` / `<x-select>` / `<x-input-label>` / `<x-input-error>` / `<x-form-section>`.
+- `<x-status-badge>`, `<x-chip>`, `<x-empty-state>`, `<x-skeleton>`.
+- `<x-icon name="…">` — inline SVG (Heroicons v2). Add new glyphs to `components/icon.blade.php` rather than pulling a runtime.
+- `<x-inr :amount="…">` — INR currency formatting with Indian digit grouping.
+
+## Layout & navigation
+
+- **Authenticated layout**: `resources/views/layouts/app.blade.php` mounts the sidebar, topbar, mobile brand header, bottom nav, and the global command palette in one place.
+- **Desktop**: `components/sidebar.blade.php` (sticky left) + `components/topbar.blade.php` (sticky top, hosts the ⌘K trigger and notifications).
+- **Mobile**: mobile brand header on top + `components/bottom-nav.blade.php` fixed at bottom. Page content reserves `pb-24` for bottom-nav clearance.
+
+**Command palette / search pattern**:
+- Global `<x-command-palette>` is mounted once in `layouts/app.blade.php`. Opens on ⌘K / Ctrl+K.
+- Backed by `SearchController@index` (route `GET /search`, name `search`), returning JSON `{ properties: [...] }`. This is currently the only JSON endpoint in the app.
+- **To make a new entity searchable**: add a query branch in `SearchController`, then add a results section in `command-palette.blade.php`'s Alpine `commandPalette()` state machine.
 
 ## India-specific (always apply)
 
-- **Currency**: INR. Format with `₹` and Indian digit grouping — `1,00,000` not `100,000`.
-- **Phone**: `+91`, 10-digit numbers. Validate accordingly.
-- **Timezone**: `Asia/Kolkata` (IST). Set in `config/app.php`.
-- **Address**: line1, line2, city, state (28 states + 8 UTs — keep a constants file), 6-digit PIN code.
-- **PII** (PAN, Aadhaar): never log, mask in UI, encrypt at rest, redact in API responses unless explicitly requested. Treat per DPDP Act 2023 — minimum data, explicit consent for non-essential fields.
+- **Currency**: INR. Format with `₹` and Indian digit grouping (`1,00,000`, not `100,000`). Use `<x-inr>` in Blade.
+- **Phone**: `+91`, 10-digit. Validate accordingly.
+- **Timezone**: target is `Asia/Kolkata` (IST). Currently `config/app.php` still says `UTC` — flagged below.
+- **Address**: line1, line2, city, state (28 states + 8 UTs via `IndianStates`), 6-digit PIN code.
+- **PII** (PAN, Aadhaar): never log, mask in UI, encrypt at rest, redact in API responses unless explicitly requested. DPDP Act 2023 — minimum data, explicit consent for non-essential fields.
 - **GST**: 15-char GSTIN, optional per owner.
 - **RERA**: registration number is a property-level optional field.
 
+## Testing
+
+- Pest 4. Bootstrap config in `tests/Pest.php`; Feature tests use `RefreshDatabase` automatically.
+- Test DB is **SQLite in-memory** (`phpunit.xml` sets `DB_DATABASE=:memory:`), regardless of the dev DB driver.
+- Run a focused test: `php artisan test --compact --filter=PropertyCrudTest`.
+- When you change anything user-scoped, write or update an owner-scope test — `tests/Feature/Properties/PropertyAuditTest.php` and the cross-user access tests are the model. Cross-user data access is a regression class that has bitten before.
+- Use existing factories (`Property::factory()`, `User::factory()`) — don't hand-build models in tests.
+
 ## Workflow conventions
 
-- Run `./vendor/bin/pint` before declaring backend work done.
-- Run `./vendor/bin/pest` (not phpunit) for tests.
-- Migrations: descriptive names. Never edit a shipped migration — write a new one.
-- Web routes → `routes/web.php`, auth → `routes/auth.php`, API → `routes/api.php`.
-- Use Laravel Boost tools when introspecting DB, routes, or running Tinker.
-
-## Dev commands
-
-- Backend (server + queue + logs + vite): `composer dev`
-- Tests: `./vendor/bin/pest`
-- Format: `./vendor/bin/pint`
-- Mobile (once `/mobile/` exists): `cd mobile && npx expo start`
+- Run `vendor/bin/pint --dirty --format agent` before declaring backend work done.
+- Migrations: descriptive names, never edit a shipped migration — write a new one. Reuse `$table->auditUsers()` for audited tables.
+- Route file split: web → `routes/web.php`, auth → `routes/auth.php`. There is no `routes/api.php` yet.
+- Prefer named routes and the `route()` helper when generating links.
+- Use Boost MCP tools (`database-query`, `database-schema`, `search-docs`) for introspection — they're project-aware.
 
 ## Known issues to fix when convenient
 
+- `config/app.php` `'timezone'` is still `'UTC'` — should be `'Asia/Kolkata'`.
 - `README.md` has unresolved merge-conflict markers (`=======`, `>>>>>>>`).
-- A SQLite file sits at repo root literally named `DigiProper`. The actual dev DB should live at `database/database.sqlite`.
+- A SQLite file sits at the repo root literally named `DigiProper`. The intended dev DB path is `database/database.sqlite`.
 
 ===
 
