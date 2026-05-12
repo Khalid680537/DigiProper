@@ -13,28 +13,35 @@
 
         <!-- Fonts -->
         <link rel="preconnect" href="https://fonts.bunny.net">
-        <link href="https://fonts.bunny.net/css?family=figtree:400,500,600&display=swap" rel="stylesheet" />
+        <link href="https://fonts.bunny.net/css?family=figtree:400,500,600,700,800&display=swap" rel="stylesheet" />
 
         <!-- Scripts -->
         @vite(['resources/css/app.css', 'resources/js/app.js'])
     </head>
-    <body class="font-sans antialiased">
-        <div class="min-h-screen bg-gray-100 dark:bg-gray-900">
-            @include('layouts.navigation')
+    <body class="font-sans antialiased bg-surface-50 dark:bg-gray-950 text-ink-800 dark:text-ink-100">
+        <div class="min-h-screen md:flex">
+            <x-sidebar class="hidden md:flex" />
 
-            <!-- Page Heading -->
-            @isset($header)
-                <header class="bg-white dark:bg-gray-800 shadow">
-                    <div class="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
-                        {{ $header }}
+            <div class="flex-1 flex flex-col min-w-0">
+                <x-topbar class="hidden md:flex" :title="$title ?? null" />
+
+                {{-- Mobile-only legacy header slot (deprecated; pages should use <x-page-hero>) --}}
+                @isset($header)
+                    <header class="md:hidden bg-white dark:bg-gray-900 shadow-soft">
+                        <div class="px-4 py-4">
+                            {{ $header }}
+                        </div>
+                    </header>
+                @endisset
+
+                <main class="flex-1 pb-24 md:pb-10 pt-4 md:pt-6">
+                    <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 animate-fade-up">
+                        {{ $slot }}
                     </div>
-                </header>
-            @endisset
-
-            <!-- Page Content -->
-            <main>
-                {{ $slot }}
-            </main>
+                </main>
+            </div>
         </div>
+
+        <x-bottom-nav class="md:hidden" />
     </body>
 </html>

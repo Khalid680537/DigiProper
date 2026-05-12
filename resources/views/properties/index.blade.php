@@ -27,148 +27,124 @@
     ];
 @endphp
 
-<x-app-layout>
-    <x-slot name="header">
-        <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
-            <div>
-                <h1 class="text-xl font-semibold text-gray-900 dark:text-gray-100">Properties</h1>
-                <p class="text-sm text-gray-500 dark:text-gray-400">Your portfolio at a glance.</p>
+<x-app-layout :title="'Properties'">
+    <div class="space-y-6">
+        {{-- Hero --}}
+        <x-page-hero tone="purple" compact>
+            <div class="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4">
+                <div>
+                    <p class="text-xs font-semibold uppercase tracking-widest text-white/70">Your portfolio</p>
+                    <h1 class="mt-1 text-2xl sm:text-3xl font-extrabold tracking-tight text-white">
+                        {{ $properties->total() }} {{ \Illuminate\Support\Str::plural('property', $properties->total()) }}
+                    </h1>
+                </div>
+                <a href="{{ route('properties.create') }}"
+                   class="inline-flex items-center justify-center gap-2 rounded-2xl bg-white text-primary-700 px-5 py-2.5 text-sm font-semibold shadow-soft hover:-translate-y-0.5 hover:shadow-glow transition ease-spring duration-150">
+                    <x-icon name="plus" class="h-4 w-4" />
+                    New property
+                </a>
             </div>
-            <a href="{{ route('properties.create') }}" class="inline-flex items-center justify-center px-4 py-2 bg-primary-600 dark:bg-primary-500 rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-primary-700 dark:hover:bg-primary-400 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 dark:focus:ring-offset-gray-900 transition">
-                + New property
-            </a>
-        </div>
-    </x-slot>
+        </x-page-hero>
 
-    <div class="py-10 max-w-7xl mx-auto sm:px-6 lg:px-8 space-y-6">
+        {{-- Flash --}}
         @if (session('status') === 'property-deleted')
-            <div class="rounded-xl bg-emerald-50 dark:bg-emerald-900/30 border border-emerald-200 dark:border-emerald-800 px-4 py-3 text-sm text-emerald-800 dark:text-emerald-200">
+            <div class="rounded-2xl bg-emerald-50 dark:bg-emerald-900/30 ring-1 ring-emerald-200 dark:ring-emerald-800 px-4 py-3 text-sm text-emerald-800 dark:text-emerald-200 flex items-center gap-2">
+                <x-icon name="check-circle" class="h-4 w-4" />
                 Property deleted.
             </div>
         @endif
 
-        <form method="GET" action="{{ route('properties.index') }}" class="flex gap-3">
-            <x-text-input
+        {{-- Search --}}
+        <form method="GET" action="{{ route('properties.index') }}" class="relative">
+            <x-icon name="search" class="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-ink-400" />
+            <input
                 type="search"
                 name="q"
                 value="{{ $q }}"
                 placeholder="Search by name, city, or address…"
-                class="flex-1"
+                class="block w-full rounded-2xl border-ink-200 dark:border-ink-700 dark:bg-gray-900 dark:text-ink-100 placeholder:text-ink-400 pl-12 pr-32 py-3.5 text-sm shadow-soft focus:border-primary-500 focus:ring-4 focus:ring-primary-500/15 transition"
             />
-            <x-primary-button type="submit">Search</x-primary-button>
+            <button type="submit" class="absolute right-2 top-1/2 -translate-y-1/2 inline-flex items-center gap-1.5 rounded-xl bg-primary-600 hover:bg-primary-500 text-white px-4 py-2 text-xs font-semibold shadow-glow-sm transition">
+                Search
+            </button>
             @if ($q !== '')
-                <a href="{{ route('properties.index') }}" class="inline-flex items-center px-3 py-2 text-sm text-gray-600 dark:text-gray-300 hover:underline">Clear</a>
+                <a href="{{ route('properties.index') }}" class="absolute -bottom-7 right-0 inline-flex items-center gap-1 text-xs text-ink-500 hover:text-primary-600">
+                    <x-icon name="x-mark" class="h-3 w-3" /> Clear search
+                </a>
             @endif
         </form>
 
         @if ($properties->total() === 0)
             <x-empty-state
-                title="{{ $q !== '' ? 'No matches' : 'No properties yet' }}"
-                description="{{ $q !== '' ? 'Try a different search.' : 'Add your first property to start tracking your portfolio.' }}"
+                icon="home-modern"
+                title="{{ $q !== '' ? 'No matches' : 'Let\'s add your first property' }}"
+                description="{{ $q !== '' ? 'Try a different search term.' : 'Capture address, tenure, financials, contacts and documents — all in one place, searchable forever.' }}"
                 :ctaHref="$q === '' ? route('properties.create') : null"
-                :ctaLabel="$q === '' ? '+ New property' : null"
+                :ctaLabel="$q === '' ? 'Add property' : null"
             />
         @else
-            {{-- Desktop table --}}
-            <div class="hidden md:block overflow-hidden rounded-2xl bg-white dark:bg-gray-800 shadow-sm ring-1 ring-gray-900/5 dark:ring-white/10">
-                <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700 text-sm">
-                    <thead class="bg-gray-50/80 dark:bg-gray-900/50">
-                        <tr class="text-left text-xs font-semibold uppercase tracking-wider text-gray-500 dark:text-gray-400">
-                            <th class="px-4 py-3">Name</th>
-                            <th class="px-4 py-3">Location</th>
-                            <th class="px-4 py-3">Tenure</th>
-                            <th class="px-4 py-3">Occupancy</th>
-                            <th class="px-4 py-3 text-right">Value</th>
-                            <th class="px-4 py-3 text-right">Rent / yr</th>
-                            <th class="px-4 py-3 text-right">Yield</th>
-                            <th class="px-4 py-3"><span class="sr-only">Status</span></th>
-                        </tr>
-                    </thead>
-                    <tbody class="divide-y divide-gray-100 dark:divide-gray-700/60">
-                        @foreach ($properties as $property)
-                            <tr class="hover:bg-primary-50/40 dark:hover:bg-primary-950/20 cursor-pointer" onclick="window.location='{{ route('properties.show', $property) }}'">
-                                <td class="px-4 py-3">
-                                    <a href="{{ route('properties.show', $property) }}" class="font-medium text-gray-900 dark:text-gray-100 hover:text-primary-700 dark:hover:text-primary-300">
-                                        {{ $property->name }}
-                                    </a>
-                                    @if ($property->title_holder)
-                                        <p class="text-xs text-gray-500 dark:text-gray-400 truncate max-w-xs">{{ $property->title_holder }}</p>
-                                    @endif
-                                </td>
-                                <td class="px-4 py-3 text-gray-700 dark:text-gray-300">
-                                    {{ $property->city ?: '—' }}
-                                    @if ($property->state)
-                                        <span class="text-gray-400">·</span> {{ $property->state }}
-                                    @endif
-                                </td>
-                                <td class="px-4 py-3">
-                                    @if ($property->tenure)
-                                        <x-status-badge :tone="$tenureTone[$property->tenure] ?? 'neutral'" :label="$tenureLabels[$property->tenure] ?? $property->tenure" />
-                                    @else
-                                        <span class="text-gray-400">—</span>
-                                    @endif
-                                </td>
-                                <td class="px-4 py-3">
-                                    @if ($property->occupancy_status)
-                                        <x-status-badge :tone="$occupancyTone[$property->occupancy_status] ?? 'neutral'" :label="$occupancyLabels[$property->occupancy_status] ?? $property->occupancy_status" />
-                                    @else
-                                        <span class="text-gray-400">—</span>
-                                    @endif
-                                </td>
-                                <td class="px-4 py-3 text-right text-gray-900 dark:text-gray-100">
-                                    <x-inr :amount="$property->imputed_value_inr" />
-                                </td>
-                                <td class="px-4 py-3 text-right text-gray-700 dark:text-gray-300">
-                                    <x-inr :amount="$property->rent_yearly_inr" />
-                                </td>
-                                <td class="px-4 py-3 text-right text-gray-700 dark:text-gray-300 tabular-nums">
-                                    {{ $property->effective_yield_percent ? $property->effective_yield_percent.'%' : '—' }}
-                                </td>
-                                <td class="px-4 py-3">
-                                    @if ($property->is_data_complete)
-                                        <x-status-badge tone="success" label="Complete" />
-                                    @else
-                                        <x-status-badge tone="neutral" label="Draft" />
-                                    @endif
-                                </td>
-                            </tr>
-                        @endforeach
-                    </tbody>
-                </table>
-            </div>
-
-            {{-- Mobile cards --}}
-            <div class="md:hidden space-y-3">
+            <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
                 @foreach ($properties as $property)
-                    <a href="{{ route('properties.show', $property) }}" class="block rounded-2xl bg-white dark:bg-gray-800 shadow-sm ring-1 ring-gray-900/5 dark:ring-white/10 p-4 hover:ring-primary-300 dark:hover:ring-primary-700 transition">
-                        <div class="flex items-start justify-between gap-2">
-                            <div>
-                                <p class="font-semibold text-gray-900 dark:text-gray-100">{{ $property->name }}</p>
-                                <p class="text-xs text-gray-500 dark:text-gray-400">{{ $property->city ?: '—' }}{{ $property->state ? ' · '.$property->state : '' }}</p>
+                    @php $initial = strtoupper(mb_substr($property->name, 0, 1)); @endphp
+                    <a href="{{ route('properties.show', $property) }}"
+                       class="group rounded-3xl bg-white dark:bg-gray-800 ring-1 ring-gray-900/5 dark:ring-white/10 shadow-soft hover:-translate-y-0.5 hover:shadow-glow transition ease-spring duration-150 overflow-hidden block">
+                        {{-- Gradient top strip --}}
+                        <div class="relative h-20 bg-gradient-to-br from-primary-500 via-primary-600 to-primary-800">
+                            <div aria-hidden="true" class="absolute -top-8 -right-8 h-24 w-24 rounded-full bg-white/15 blur-2xl"></div>
+                            <div class="absolute -bottom-5 left-5 h-14 w-14 rounded-2xl bg-white dark:bg-gray-800 ring-4 ring-white dark:ring-gray-800 flex items-center justify-center text-xl font-extrabold text-primary-700 dark:text-primary-300 shadow-soft">
+                                {{ $initial }}
                             </div>
-                            @if ($property->occupancy_status)
-                                <x-status-badge :tone="$occupancyTone[$property->occupancy_status] ?? 'neutral'" :label="$occupancyLabels[$property->occupancy_status] ?? $property->occupancy_status" />
+                            @if ($property->is_data_complete)
+                                <span class="absolute top-3 right-3 inline-flex items-center gap-1 rounded-full bg-white/20 backdrop-blur-sm text-white text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 ring-1 ring-white/30">
+                                    <x-icon name="check-circle" class="h-3 w-3" /> Complete
+                                </span>
+                            @else
+                                <span class="absolute top-3 right-3 inline-flex items-center rounded-full bg-white/15 backdrop-blur-sm text-white text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 ring-1 ring-white/30">
+                                    Draft
+                                </span>
                             @endif
                         </div>
-                        <dl class="mt-4 grid grid-cols-3 gap-2 text-xs">
-                            <div>
-                                <dt class="text-gray-500 dark:text-gray-400">Value</dt>
-                                <dd class="font-medium text-gray-900 dark:text-gray-100"><x-inr :amount="$property->imputed_value_inr" /></dd>
+
+                        <div class="pt-8 p-5">
+                            <h3 class="font-semibold text-ink-900 dark:text-ink-50 truncate group-hover:text-primary-700 dark:group-hover:text-primary-300 transition">
+                                {{ $property->name }}
+                            </h3>
+                            <p class="mt-0.5 text-xs text-ink-500 dark:text-ink-400 truncate flex items-center gap-1">
+                                <x-icon name="map-pin" class="h-3 w-3 shrink-0" />
+                                {{ $property->city ?: '—' }}{{ $property->state ? ' · '.$property->state : '' }}
+                            </p>
+
+                            <dl class="mt-4 grid grid-cols-3 gap-2">
+                                <div>
+                                    <dt class="text-[10px] font-semibold uppercase tracking-wide text-ink-400 dark:text-ink-500">Value</dt>
+                                    <dd class="mt-0.5 text-sm font-semibold text-ink-900 dark:text-ink-50 truncate"><x-inr :amount="$property->imputed_value_inr" /></dd>
+                                </div>
+                                <div>
+                                    <dt class="text-[10px] font-semibold uppercase tracking-wide text-ink-400 dark:text-ink-500">Rent / yr</dt>
+                                    <dd class="mt-0.5 text-sm font-semibold text-ink-900 dark:text-ink-50 truncate"><x-inr :amount="$property->rent_yearly_inr" /></dd>
+                                </div>
+                                <div>
+                                    <dt class="text-[10px] font-semibold uppercase tracking-wide text-ink-400 dark:text-ink-500">Yield</dt>
+                                    <dd class="mt-0.5 text-sm font-semibold text-ink-900 dark:text-ink-50 tabular-nums">
+                                        {{ $property->effective_yield_percent ? $property->effective_yield_percent.'%' : '—' }}
+                                    </dd>
+                                </div>
+                            </dl>
+
+                            <div class="mt-4 flex flex-wrap gap-1.5">
+                                @if ($property->tenure)
+                                    <x-status-badge :tone="$tenureTone[$property->tenure] ?? 'neutral'" :label="$tenureLabels[$property->tenure] ?? $property->tenure" />
+                                @endif
+                                @if ($property->occupancy_status)
+                                    <x-status-badge :tone="$occupancyTone[$property->occupancy_status] ?? 'neutral'" :label="$occupancyLabels[$property->occupancy_status] ?? $property->occupancy_status" />
+                                @endif
                             </div>
-                            <div>
-                                <dt class="text-gray-500 dark:text-gray-400">Rent / yr</dt>
-                                <dd class="font-medium text-gray-900 dark:text-gray-100"><x-inr :amount="$property->rent_yearly_inr" /></dd>
-                            </div>
-                            <div>
-                                <dt class="text-gray-500 dark:text-gray-400">Yield</dt>
-                                <dd class="font-medium text-gray-900 dark:text-gray-100 tabular-nums">{{ $property->effective_yield_percent ? $property->effective_yield_percent.'%' : '—' }}</dd>
-                            </div>
-                        </dl>
+                        </div>
                     </a>
                 @endforeach
             </div>
 
-            <div>
+            <div class="pt-2">
                 {{ $properties->links() }}
             </div>
         @endif

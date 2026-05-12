@@ -24,7 +24,7 @@ test('the create form renders', function () {
     $this->actingAs($user)
         ->get(route('properties.create'))
         ->assertOk()
-        ->assertSee('New property');
+        ->assertSee('Add a new property');
 });
 
 test('storing a property persists it and redirects to show', function () {
@@ -81,7 +81,7 @@ test('the show page renders the property summary', function () {
         ->get(route('properties.show', $property))
         ->assertOk()
         ->assertSeeText('SGTN 2')
-        ->assertSee('Summary');
+        ->assertSee('Financials');
 });
 
 test('the edit form prefills existing data', function () {
