@@ -65,7 +65,9 @@ Authorization currently just checks `$this->user() !== null`; tightening is a de
 
 Blade + Tailwind + Alpine. The design system is intentional — reuse tokens and components instead of inventing one-off styles.
 
-**Color tokens** (`tailwind.config.js`):
+**Tailwind v4 (CSS-first config).** There is no `tailwind.config.js` — theme tokens, plugins, and content sources all live in `resources/css/app.css` (`@theme`, `@plugin "@tailwindcss/forms"`, `@source`). Add new design tokens (colors, shadows, gradients, radii, easings, animations) as CSS variables inside `@theme`; add new project-specific utility classes as `@utility name { … }` blocks in the same file. Do **not** introduce a `tailwind.config.js` — that would silently revert the app to JS-config mode and orphan the existing tokens. Prefer v4-native variants when reaching for new behavior: `starting:` + `transition-discrete` for enter animations (don't add more `@keyframes`), `@container` + `@sm:`/`@md:` for card-internal responsiveness (don't stack viewport breakpoints inside a component), `user-valid:` / `user-invalid:` for inline form-error styling, `inset-ring-*` over hand-rolled inset shadows.
+
+**Color tokens** (defined in `resources/css/app.css` under `@theme`):
 - `primary-*` — brand purple. CTAs, focus rings, nav highlights.
 - `accent-*` — warm peach. Secondary highlights, stat-card tints.
 - `ink-*` — neutral text (dark-mode aware). Use these instead of `gray-*`.

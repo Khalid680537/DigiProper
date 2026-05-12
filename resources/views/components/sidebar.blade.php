@@ -14,7 +14,12 @@
         <span class="h-9 w-9 rounded-xl bg-hero-purple flex items-center justify-center shadow-glow-sm ring-1 ring-white/20">
             <x-application-logo class="h-5 w-5 fill-current text-white" />
         </span>
-        <span class="font-extrabold text-lg tracking-tight text-ink-900 dark:text-ink-50">DigiProper</span>
+        <span class="inline-flex items-center gap-0.5">
+            <span class="font-extrabold text-lg tracking-tight text-accent-600 dark:text-accent-400">Digi<span class="text-accent-700 dark:text-accent-300 underline decoration-blue-500 decoration-2 underline-offset-2">Proper</span></span>
+            <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" class="h-3.5 w-3.5 -translate-y-1.5 text-primary-500 dark:text-primary-400">
+                <path d="M12 2Q13 11 22 12Q13 13 12 22Q11 13 2 12Q11 11 12 2Z"/>
+            </svg>
+        </span>
     </a>
 
     {{-- Nav --}}
