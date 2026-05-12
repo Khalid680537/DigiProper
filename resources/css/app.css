@@ -75,6 +75,13 @@
     --animate-fade-up:   fade-up 0.4s ease-out both;
     --animate-shimmer:   shimmer 1.4s linear infinite;
     --animate-pulse-dot: pulse-dot 1.6s ease-in-out infinite;
+
+    /* Background dot color (light mode default; dark mode overrides below) */
+    --dot-color: rgba(22, 6, 65, 0.12);
+}
+
+.dark {
+    --dot-color: rgba(255, 255, 255, 0.06);
 }
 
 @keyframes fade-up {
