@@ -21,7 +21,7 @@
     <body class="font-sans text-gray-900 antialiased">
         <div class="relative min-h-screen flex flex-col justify-center items-center px-4 py-12 overflow-hidden bg-gradient-to-br from-primary-50 via-white to-primary-100 dark:from-gray-950 dark:via-gray-900 dark:to-primary-950/40">
             <div aria-hidden="true" class="pointer-events-none absolute -top-40 -left-40 h-[28rem] w-[28rem] rounded-full bg-primary-400/30 dark:bg-primary-500/20 blur-3xl"></div>
-            <div aria-hidden="true" class="pointer-events-none absolute -bottom-40 -right-40 h-[32rem] w-[32rem] rounded-full bg-fuchsia-300/30 dark:bg-fuchsia-500/10 blur-3xl"></div>
+            <div aria-hidden="true" class="pointer-events-none absolute -bottom-40 -right-40 h-[32rem] w-[32rem] rounded-full bg-accent-400/30 dark:bg-accent-500/15 blur-3xl"></div>
             <div aria-hidden="true" class="pointer-events-none absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 h-[24rem] w-[24rem] rounded-full bg-sky-200/20 dark:bg-sky-500/10 blur-3xl"></div>
 
             <div aria-hidden="true" class="pointer-events-none absolute inset-0 bg-[linear-gradient(to_right,rgba(99,102,241,0.06)_1px,transparent_1px),linear-gradient(to_bottom,rgba(99,102,241,0.06)_1px,transparent_1px)] bg-[size:48px_48px] [mask-image:radial-gradient(ellipse_at_center,black_30%,transparent_75%)] dark:bg-[linear-gradient(to_right,rgba(165,180,252,0.05)_1px,transparent_1px),linear-gradient(to_bottom,rgba(165,180,252,0.05)_1px,transparent_1px)]"></div>
