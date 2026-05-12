@@ -50,6 +50,21 @@ class Property extends Model
     }
 
     /**
+     * Force route model binding to the current user's rows. Belt and braces
+     * alongside the global owner scope — even if the scope is bypassed (e.g.
+     * binding resolves before auth is established), binding still 404s
+     * cross-user access instead of falling through to the policy.
+     *
+     * @param  Builder<Property>  $query
+     * @return Builder<Property>
+     */
+    public function resolveRouteBindingQuery($query, $value, $field = null)
+    {
+        return $query->where($field ?? $this->getRouteKeyName(), $value)
+            ->where($this->getTable().'.created_by', auth()->id());
+    }
+
+    /**
      * @return array<string, string>
      */
     protected function casts(): array
