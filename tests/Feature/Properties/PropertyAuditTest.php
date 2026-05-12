@@ -41,7 +41,9 @@ test('soft deleting a property sets deleted_by and deleted_at together', functio
     $this->actingAs($deleter);
     $property->delete();
 
-    $trashed = Property::withTrashed()->find($property->id);
+    // Bypass the per-user global scope since the deleter isn't the owner —
+    // the test is explicitly verifying cross-user audit attribution.
+    $trashed = Property::withoutGlobalScope('owner')->withTrashed()->find($property->id);
 
     expect($trashed)->not->toBeNull()
         ->and($trashed->deleted_by)->toBe($deleter->id)

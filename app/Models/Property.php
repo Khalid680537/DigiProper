@@ -5,6 +5,7 @@ namespace App\Models;
 use App\Models\Concerns\HasAudit;
 use Database\Factories\PropertyFactory;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -39,6 +40,15 @@ class Property extends Model
 {
     /** @use HasFactory<PropertyFactory> */
     use HasAudit, HasFactory, SoftDeletes;
+
+    protected static function booted(): void
+    {
+        static::addGlobalScope('owner', function (Builder $query): void {
+            if (auth()->check()) {
+                $query->where($query->getModel()->getTable().'.created_by', auth()->id());
+            }
+        });
+    }
 
     /**
      * @return array<string, string>
