@@ -16,7 +16,7 @@ class DashboardController extends Controller
             ? round(($totalRent / $totalValue) * 100, 2)
             : null;
 
-        $recent = Property::latest('created_at')->take(5)->get();
+        $recent = Property::with('primaryPhoto')->latest('created_at')->take(5)->get();
 
         return view('dashboard', [
             'totalCount' => $totalCount,

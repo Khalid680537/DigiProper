@@ -106,11 +106,20 @@
                     {{-- Mobile carousel --}}
                     <div class="lg:hidden flex gap-3 overflow-x-auto snap-x snap-mandatory scrollbar-hide -mx-5 px-5 pb-1">
                         @foreach ($recent as $property)
-                            @php $bgInit = strtoupper(mb_substr($property->name, 0, 1)); @endphp
+                            @php
+                                $bgInit = strtoupper(mb_substr($property->name, 0, 1));
+                                $recentPrimary = $property->primaryPhoto;
+                            @endphp
                             <a href="{{ route('properties.show', $property) }}"
                                class="shrink-0 w-72 snap-start rounded-2xl bg-surface-50 dark:bg-gray-900/50 ring-1 ring-ink-100 dark:ring-ink-800 p-4 hover:ring-primary-300 dark:hover:ring-primary-700 transition">
                                 <div class="flex items-center gap-3">
-                                    <div class="h-10 w-10 rounded-xl bg-gradient-to-br from-primary-400 to-primary-700 text-white font-bold flex items-center justify-center shrink-0">{{ $bgInit }}</div>
+                                    @if ($recentPrimary)
+                                        <img src="{{ route('properties.photos.show', [$property, $recentPrimary]) }}"
+                                             alt="{{ $property->name }}"
+                                             class="h-10 w-10 rounded-xl object-cover shrink-0 ring-1 ring-ink-100 dark:ring-ink-800" />
+                                    @else
+                                        <div class="h-10 w-10 rounded-xl bg-gradient-to-br from-primary-400 to-primary-700 text-white font-bold flex items-center justify-center shrink-0">{{ $bgInit }}</div>
+                                    @endif
                                     <div class="min-w-0 flex-1">
                                         <p class="font-semibold text-ink-900 dark:text-ink-50 truncate">{{ $property->name }}</p>
                                         <p class="text-xs text-ink-500 dark:text-ink-400 truncate">{{ $property->city ?: '—' }}{{ $property->state ? ' · '.$property->state : '' }}</p>
@@ -127,11 +136,20 @@
                     {{-- Desktop vertical list --}}
                     <ul class="hidden lg:block divide-y divide-ink-100 dark:divide-ink-800">
                         @foreach ($recent as $property)
-                            @php $bgInit = strtoupper(mb_substr($property->name, 0, 1)); @endphp
+                            @php
+                                $bgInit = strtoupper(mb_substr($property->name, 0, 1));
+                                $recentPrimary = $property->primaryPhoto;
+                            @endphp
                             <li>
                                 <a href="{{ route('properties.show', $property) }}" class="flex items-center justify-between gap-3 py-3 -mx-2 px-3 rounded-xl hover:bg-primary-50/60 dark:hover:bg-primary-950/30 transition">
                                     <div class="flex items-center gap-3 min-w-0">
-                                        <div class="h-10 w-10 rounded-xl bg-gradient-to-br from-primary-400 to-primary-700 text-white font-bold flex items-center justify-center shrink-0">{{ $bgInit }}</div>
+                                        @if ($recentPrimary)
+                                            <img src="{{ route('properties.photos.show', [$property, $recentPrimary]) }}"
+                                                 alt="{{ $property->name }}"
+                                                 class="h-10 w-10 rounded-xl object-cover shrink-0 ring-1 ring-ink-100 dark:ring-ink-800" />
+                                        @else
+                                            <div class="h-10 w-10 rounded-xl bg-gradient-to-br from-primary-400 to-primary-700 text-white font-bold flex items-center justify-center shrink-0">{{ $bgInit }}</div>
+                                        @endif
                                         <div class="min-w-0">
                                             <p class="font-semibold text-ink-900 dark:text-ink-50 truncate">{{ $property->name }}</p>
                                             <p class="text-xs text-ink-500 dark:text-ink-400 truncate">{{ $property->city ?: '—' }}{{ $property->state ? ' · '.$property->state : '' }}</p>

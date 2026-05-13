@@ -19,6 +19,7 @@ class SearchController extends Controller
         }
 
         $properties = Property::query()
+            ->with('primaryPhoto')
             ->where(function ($w) use ($q) {
                 $w->where('name', 'like', "%{$q}%")
                     ->orWhere('city', 'like', "%{$q}%")
@@ -32,6 +33,7 @@ class SearchController extends Controller
                 'name' => $property->name,
                 'city' => $property->city,
                 'url' => route('properties.show', $property),
+                'thumbnail_url' => $property->thumbnail_url,
             ]);
 
         return response()->json(['properties' => $properties]);

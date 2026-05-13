@@ -51,9 +51,12 @@
 <x-app-layout :title="$property->name">
     <div class="space-y-6">
         {{-- Hero --}}
-        <x-page-hero tone="purple">
+        @php $primaryPhoto = $property->primaryPhoto; @endphp
+        <x-page-hero tone="purple"
+            :image="$primaryPhoto ? route('properties.photos.show', [$property, $primaryPhoto]) : null"
+            :image-alt="$primaryPhoto ? $property->name : ''">
             <div class="flex flex-col sm:flex-row sm:items-center gap-5">
-                <div class="h-16 w-16 rounded-2xl bg-white/15 ring-2 ring-white/25 flex items-center justify-center text-2xl font-extrabold text-white shrink-0">
+                <div class="h-16 w-16 rounded-2xl bg-white/15 ring-2 ring-white/25 flex items-center justify-center text-2xl font-extrabold text-white shrink-0 backdrop-blur-sm">
                     {{ $initial }}
                 </div>
                 <div class="min-w-0 flex-1">
@@ -111,6 +114,9 @@
                 'property-updated' => ['emerald', 'Saved.'],
                 'document-uploaded' => ['emerald', 'Document uploaded.'],
                 'document-deleted' => ['neutral', 'Document removed.'],
+                'photo-uploaded' => ['emerald', 'Photo uploaded.'],
+                'photo-primary-set' => ['emerald', 'Primary photo updated.'],
+                'photo-deleted' => ['neutral', 'Photo removed.'],
                 default => null,
             };
         @endphp
@@ -213,6 +219,8 @@
                 @endif
 
                 @include('properties._documents', ['property' => $property])
+
+                @include('properties._photos', ['property' => $property])
             </div>
 
             <aside class="space-y-6">
