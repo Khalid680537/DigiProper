@@ -88,9 +88,17 @@
                     @php $initial = strtoupper(mb_substr($property->name, 0, 1)); @endphp
                     <a href="{{ route('properties.show', $property) }}"
                        class="group rounded-3xl bg-white dark:bg-gray-800 ring-1 ring-gray-900/5 dark:ring-white/10 shadow-soft hover:-translate-y-0.5 hover:shadow-glow transition ease-spring duration-150 overflow-hidden block">
-                        {{-- Gradient top strip --}}
-                        <div class="relative h-20 bg-gradient-to-br from-primary-500 via-primary-600 to-primary-800">
-                            <div aria-hidden="true" class="absolute -top-8 -right-8 h-24 w-24 rounded-full bg-white/15 blur-2xl"></div>
+                        {{-- Top strip: photo when available, gradient otherwise --}}
+                        @php $primary = $property->primaryPhoto; @endphp
+                        <div class="relative {{ $primary ? 'h-28' : 'h-20' }} @if (! $primary) bg-gradient-to-br from-primary-500 via-primary-600 to-primary-800 @endif">
+                            @if ($primary)
+                                <img src="{{ route('properties.photos.show', [$property, $primary]) }}"
+                                     alt="{{ $property->name }}"
+                                     class="absolute inset-0 h-full w-full object-cover" />
+                                <div aria-hidden="true" class="absolute inset-0 bg-gradient-to-t from-ink-950/45 via-transparent to-transparent"></div>
+                            @else
+                                <div aria-hidden="true" class="absolute -top-8 -right-8 h-24 w-24 rounded-full bg-white/15 blur-2xl"></div>
+                            @endif
                             <div class="absolute -bottom-5 left-5 h-14 w-14 rounded-2xl bg-white dark:bg-gray-800 ring-4 ring-white dark:ring-gray-800 flex items-center justify-center text-xl font-extrabold text-primary-700 dark:text-primary-300 shadow-soft">
                                 {{ $initial }}
                             </div>

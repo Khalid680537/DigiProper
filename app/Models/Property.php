@@ -10,6 +10,7 @@ use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 #[Fillable([
@@ -80,6 +81,42 @@ class Property extends Model
     public function documents(): HasMany
     {
         return $this->hasMany(PropertyDocument::class);
+    }
+
+    /**
+     * @return HasMany<PropertyPhoto, $this>
+     */
+    public function photos(): HasMany
+    {
+        return $this->hasMany(PropertyPhoto::class)->orderBy('sort_order')->orderBy('id');
+    }
+
+    /**
+     * @return HasOne<PropertyPhoto, $this>
+     */
+    public function primaryPhoto(): HasOne
+    {
+        return $this->hasOne(PropertyPhoto::class)->where('is_primary', true);
+    }
+
+    /**
+     * URL of the primary photo, or null when no thumbnail exists yet.
+     *
+     * @return Attribute<string|null, never>
+     */
+    protected function thumbnailUrl(): Attribute
+    {
+        return Attribute::get(function (): ?string {
+            $photo = $this->relationLoaded('primaryPhoto')
+                ? $this->getRelation('primaryPhoto')
+                : $this->primaryPhoto()->first();
+
+            if (! $photo) {
+                return null;
+            }
+
+            return route('properties.photos.show', [$this, $photo]);
+        });
     }
 
     /**

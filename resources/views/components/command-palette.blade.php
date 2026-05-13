@@ -103,14 +103,23 @@
                                         class="flex items-center gap-3 px-5 py-2.5 text-sm transition-colors"
                                         x-on:mouseenter="activeIndex = idx"
                                     >
-                                        <span
-                                            :class="activeIndex === idx
-                                                ? 'bg-hero-purple text-white'
-                                                : 'bg-surface-100 dark:bg-gray-700 text-ink-500 dark:text-ink-300'"
-                                            class="flex h-7 w-7 items-center justify-center rounded-lg transition-colors"
-                                        >
-                                            <x-icon name="home-modern" class="h-4 w-4" />
-                                        </span>
+                                        <template x-if="item.thumbnail_url">
+                                            <img
+                                                :src="item.thumbnail_url"
+                                                :alt="item.name"
+                                                class="h-7 w-7 rounded-lg object-cover ring-1 ring-ink-100 dark:ring-ink-700"
+                                            />
+                                        </template>
+                                        <template x-if="!item.thumbnail_url">
+                                            <span
+                                                :class="activeIndex === idx
+                                                    ? 'bg-hero-purple text-white'
+                                                    : 'bg-surface-100 dark:bg-gray-700 text-ink-500 dark:text-ink-300'"
+                                                class="flex h-7 w-7 items-center justify-center rounded-lg transition-colors"
+                                            >
+                                                <x-icon name="home-modern" class="h-4 w-4" />
+                                            </span>
+                                        </template>
                                         <span class="flex-1 truncate" x-text="item.name"></span>
                                         <span class="text-xs text-ink-400 dark:text-ink-500 truncate max-w-[40%]" x-show="item.city" x-text="item.city"></span>
                                     </a>

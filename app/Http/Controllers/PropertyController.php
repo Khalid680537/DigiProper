@@ -17,7 +17,7 @@ class PropertyController extends Controller
     {
         $this->authorize('viewAny', Property::class);
 
-        $query = Property::query()->orderBy('name');
+        $query = Property::query()->with('primaryPhoto')->orderBy('name');
 
         $q = trim((string) $request->query('q', ''));
         if ($q !== '') {
@@ -62,7 +62,14 @@ class PropertyController extends Controller
     {
         $this->authorize('view', $property);
 
-        $property->load(['documents' => fn ($q) => $q->latest(), 'contacts', 'creator', 'updater']);
+        $property->load([
+            'documents' => fn ($q) => $q->latest(),
+            'photos',
+            'primaryPhoto',
+            'contacts',
+            'creator',
+            'updater',
+        ]);
 
         return view('properties.show', [
             'property' => $property,
