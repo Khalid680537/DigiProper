@@ -35,7 +35,11 @@
                 <div>
                     <p class="text-xs font-semibold uppercase tracking-widest text-white/70">Your portfolio</p>
                     <h1 class="mt-1 text-2xl sm:text-3xl font-extrabold tracking-tight text-white">
-                        {{ $properties->total() }} {{ \Illuminate\Support\Str::plural('property', $properties->total()) }}
+                        @if ($properties->total() === 0)
+                            Start your portfolio journey
+                        @else
+                            {{ $properties->total() }} {{ \Illuminate\Support\Str::plural('property', $properties->total()) }}
+                        @endif
                     </h1>
                 </div>
                 <a href="{{ route('properties.create') }}"
