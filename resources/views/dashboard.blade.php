@@ -155,9 +155,12 @@
                                             <p class="text-xs text-ink-500 dark:text-ink-400 truncate">{{ $property->city ?: '—' }}{{ $property->state ? ' · '.$property->state : '' }}</p>
                                         </div>
                                     </div>
-                                    <div class="text-right shrink-0">
-                                        <p class="text-sm font-semibold text-ink-900 dark:text-ink-50"><x-inr :amount="$property->imputed_value_inr" /></p>
-                                        <p class="text-xs text-ink-500 dark:text-ink-400">{{ $property->created_at?->diffForHumans() }}</p>
+                                    <div class="flex items-center gap-3 shrink-0">
+                                        <div class="text-right">
+                                            <p class="text-sm font-semibold text-ink-900 dark:text-ink-50"><x-inr :amount="$property->imputed_value_inr" /></p>
+                                            <p class="text-xs text-ink-500 dark:text-ink-400">{{ $property->created_at?->diffForHumans() }}</p>
+                                        </div>
+                                        <x-qr-thumb :property="$property" :size="36" :linked="false" />
                                     </div>
                                 </a>
                             </li>

@@ -95,6 +95,11 @@
                     </div>
                 </div>
                 <div class="flex gap-2 shrink-0">
+                    <button type="button" x-data @click="$dispatch('open-modal', 'property-share')"
+                            class="inline-flex items-center gap-2 rounded-2xl bg-white text-primary-700 hover:bg-white/90 px-4 py-2.5 text-sm font-semibold shadow-soft ring-1 ring-white/40 transition">
+                        <x-icon name="share" class="h-4 w-4" />
+                        <span class="hidden sm:inline">Share</span>
+                    </button>
                     <a href="{{ route('properties.edit', $property) }}" class="inline-flex items-center gap-2 rounded-2xl bg-white/15 hover:bg-white/25 text-white px-4 py-2.5 text-sm font-semibold backdrop-blur-sm ring-1 ring-white/20 transition">
                         <x-icon name="pencil" class="h-4 w-4" /> Edit
                     </a>
@@ -117,6 +122,10 @@
                 'photo-uploaded' => ['emerald', 'Photo uploaded.'],
                 'photo-primary-set' => ['emerald', 'Primary photo updated.'],
                 'photo-deleted' => ['neutral', 'Photo removed.'],
+                'share-enabled' => ['emerald', 'Sharing enabled.'],
+                'share-rotated' => ['emerald', 'Share link rotated. The previous QR no longer works.'],
+                'share-disabled' => ['neutral', 'Sharing disabled.'],
+                'share-visibility-updated' => ['emerald', 'Share visibility updated.'],
                 default => null,
             };
         @endphp
@@ -280,6 +289,8 @@
                 </section>
             </aside>
         </div>
+
+        @include('properties._share-modal', ['property' => $property])
 
         <x-modal name="confirm-property-delete" focusable>
             <form method="POST" action="{{ route('properties.destroy', $property) }}" class="p-7">
