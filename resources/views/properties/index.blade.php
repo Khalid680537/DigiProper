@@ -77,8 +77,8 @@
         @if ($properties->total() === 0)
             <x-empty-state
                 icon="home-modern"
-                title="{{ $q !== '' ? 'No matches' : 'Let\'s add your first property' }}"
-                description="{{ $q !== '' ? 'Try a different search term.' : 'Capture address, tenure, financials, contacts and documents — all in one place, searchable forever.' }}"
+                :title="$q !== '' ? 'No matches' : 'Let\'s add your first property'"
+                :description="$q !== '' ? 'Try a different search term.' : 'Capture address, tenure, financials, contacts and documents — all in one place, searchable forever.'"
                 :ctaHref="$q === '' ? route('properties.create') : null"
                 :ctaLabel="$q === '' ? 'Add property' : null"
             />
