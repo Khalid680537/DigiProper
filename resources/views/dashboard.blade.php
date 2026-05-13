@@ -17,8 +17,12 @@
                     <p class="text-sm text-white/80">{{ $greeting }},</p>
                     <h1 class="text-3xl sm:text-4xl font-extrabold tracking-tight text-white truncate">{{ $user->name }}.</h1>
                     <p class="mt-1 text-sm text-white/85">
-                        {{ $totalCount }} {{ \Illuminate\Support\Str::plural('property', $totalCount) }} ·
-                        <span class="font-semibold"><x-inr :amount="$totalValue" /></span> total value
+                        @if ($totalCount === 0)
+                            Ready to add your first property?
+                        @else
+                            {{ $totalCount }} {{ \Illuminate\Support\Str::plural('property', $totalCount) }} ·
+                            <span class="font-semibold"><x-inr :amount="$totalValue" /></span> total value
+                        @endif
                     </p>
                 </div>
                 <a href="{{ route('properties.create') }}"
