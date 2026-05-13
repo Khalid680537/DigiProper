@@ -4,14 +4,18 @@ namespace App\Models;
 
 use App\Models\Concerns\HasAudit;
 use Database\Factories\PropertyFactory;
+use Endroid\QrCode\Builder\Builder;
+use Endroid\QrCode\Writer\SvgWriter;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
-use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Builder as EloquentBuilder;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Str;
 
 #[Fillable([
     'name',
@@ -35,6 +39,11 @@ use Illuminate\Database\Eloquent\SoftDeletes;
     'keys_location',
     'extra_notes',
     'is_data_complete',
+    'share_financials',
+    'share_contacts',
+    'share_keys_location',
+    'share_extra_notes',
+    'share_title_holder',
 ])]
 class Property extends Model
 {
@@ -43,9 +52,15 @@ class Property extends Model
 
     protected static function booted(): void
     {
-        static::addGlobalScope('owner', function (Builder $query): void {
+        static::addGlobalScope('owner', function (EloquentBuilder $query): void {
             if (auth()->check()) {
                 $query->where($query->getModel()->getTable().'.created_by', auth()->id());
+            }
+        });
+
+        static::creating(function (self $property): void {
+            if ($property->share_token === null) {
+                $property->share_token = Str::random(32);
             }
         });
     }
@@ -56,8 +71,8 @@ class Property extends Model
      * binding resolves before auth is established), binding still 404s
      * cross-user access instead of falling through to the policy.
      *
-     * @param  Builder<Property>  $query
-     * @return Builder<Property>
+     * @param  EloquentBuilder<Property>  $query
+     * @return EloquentBuilder<Property>
      */
     public function resolveRouteBindingQuery($query, $value, $field = null)
     {
@@ -72,6 +87,11 @@ class Property extends Model
     {
         return [
             'is_data_complete' => 'boolean',
+            'share_financials' => 'boolean',
+            'share_contacts' => 'boolean',
+            'share_keys_location' => 'boolean',
+            'share_extra_notes' => 'boolean',
+            'share_title_holder' => 'boolean',
         ];
     }
 
@@ -148,5 +168,52 @@ class Property extends Model
 
             return number_format(((float) $rent / (float) $value) * 100, 2, '.', '');
         });
+    }
+
+    /**
+     * Public share URL keyed off the rotating share_token. Null when sharing
+     * is disabled.
+     *
+     * @return Attribute<string|null, never>
+     */
+    protected function shareUrl(): Attribute
+    {
+        return Attribute::get(function (): ?string {
+            if ($this->share_token === null) {
+                return null;
+            }
+
+            return route('properties.share.show', $this->share_token);
+        });
+    }
+
+    /**
+     * Inline SVG markup for the property's share QR, sized to $size px.
+     * Cached for 7 days keyed by token+size; rotate/disable clears it.
+     */
+    public function qrSvg(int $size = 96): ?string
+    {
+        if ($this->share_token === null) {
+            return null;
+        }
+
+        $token = $this->share_token;
+
+        return Cache::remember(
+            self::qrCacheKey($token, $size),
+            now()->addDays(7),
+            fn (): string => (new Builder(
+                writer: new SvgWriter,
+                writerOptions: [SvgWriter::WRITER_OPTION_EXCLUDE_XML_DECLARATION => true],
+                data: route('properties.share.show', $token),
+                size: $size,
+                margin: 0,
+            ))->build()->getString(),
+        );
+    }
+
+    public static function qrCacheKey(string $token, int $size): string
+    {
+        return "property:qr:{$token}:{$size}";
     }
 }

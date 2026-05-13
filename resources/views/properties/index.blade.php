@@ -103,14 +103,17 @@
                                 {{ $initial }}
                             </div>
                             @if ($property->is_data_complete)
-                                <span class="absolute top-3 right-3 inline-flex items-center gap-1 rounded-full bg-white/20 backdrop-blur-sm text-white text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 ring-1 ring-white/30">
+                                <span class="absolute top-3 left-3 inline-flex items-center gap-1 rounded-full bg-white/20 backdrop-blur-sm text-white text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 ring-1 ring-white/30">
                                     <x-icon name="check-circle" class="h-3 w-3" /> Complete
                                 </span>
                             @else
-                                <span class="absolute top-3 right-3 inline-flex items-center rounded-full bg-white/15 backdrop-blur-sm text-white text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 ring-1 ring-white/30">
+                                <span class="absolute top-3 left-3 inline-flex items-center rounded-full bg-white/15 backdrop-blur-sm text-white text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 ring-1 ring-white/30">
                                     Draft
                                 </span>
                             @endif
+                            <div class="absolute top-3 right-3">
+                                <x-qr-thumb :property="$property" :size="44" :linked="false" />
+                            </div>
                         </div>
 
                         <div class="pt-8 p-5">

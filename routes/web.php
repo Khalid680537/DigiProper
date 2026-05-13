@@ -5,10 +5,17 @@ use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\PropertyController;
 use App\Http\Controllers\PropertyDocumentController;
 use App\Http\Controllers\PropertyPhotoController;
+use App\Http\Controllers\PropertyShareController;
 use App\Http\Controllers\SearchController;
 use Illuminate\Support\Facades\Route;
 
 require __DIR__.'/auth.php';
+
+Route::middleware('throttle:60,1')->prefix('p')->name('properties.share.')->group(function () {
+    Route::get('{token}', [PropertyShareController::class, 'show'])->name('show');
+    Route::get('{token}/qr.svg', [PropertyShareController::class, 'qrSvg'])->name('qr.svg');
+    Route::get('{token}/qr.png', [PropertyShareController::class, 'qrPng'])->name('qr.png');
+});
 
 Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/', fn () => redirect()->route('dashboard'));
@@ -37,6 +44,15 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::delete('properties/{property}/photos/{photo}', [PropertyPhotoController::class, 'destroy'])
         ->scopeBindings()
         ->name('properties.photos.destroy');
+
+    Route::post('properties/{property}/share/enable', [PropertyShareController::class, 'enable'])
+        ->name('properties.share.enable');
+    Route::post('properties/{property}/share/rotate', [PropertyShareController::class, 'rotate'])
+        ->name('properties.share.rotate');
+    Route::delete('properties/{property}/share', [PropertyShareController::class, 'disable'])
+        ->name('properties.share.disable');
+    Route::patch('properties/{property}/share/visibility', [PropertyShareController::class, 'updateVisibility'])
+        ->name('properties.share.visibility');
 
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
