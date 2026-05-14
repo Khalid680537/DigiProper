@@ -129,3 +129,13 @@
         animation: shimmer 1.4s linear infinite;
     }
 }
+
+/* iOS Safari auto-zooms when a focused form control has font-size < 16px.
+   Bump to 16px on phones only; desktop typography is unchanged. */
+@media (max-width: 640px) {
+    input:where(:not([type="checkbox"]):not([type="radio"]):not([type="range"])),
+    select,
+    textarea {
+        font-size: 16px;
+    }
+}

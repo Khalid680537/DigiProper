@@ -2,7 +2,7 @@
 <html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
     <head>
         <meta charset="utf-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
         <meta name="robots" content="noindex, nofollow">
 
         <title>{{ $title ?? config('app.name', 'DigiProper') }}</title>
@@ -18,7 +18,7 @@
     <body class="font-sans antialiased bg-surface-50 dark:bg-gray-950 text-ink-800 dark:text-ink-100">
         <x-background-ribbons />
 
-        <div class="relative min-h-screen flex flex-col">
+        <div class="relative min-h-dvh flex flex-col">
             <header class="sticky top-0 z-30 backdrop-blur-md bg-white/80 dark:bg-gray-900/80 border-b border-ink-100 dark:border-ink-800">
                 <div class="mx-auto max-w-5xl px-4 sm:px-6 lg:px-8 h-14 flex items-center justify-between">
                     <a href="{{ url('/') }}" class="inline-flex items-center gap-2.5">

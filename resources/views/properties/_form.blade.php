@@ -26,7 +26,7 @@
 <form
     method="POST"
     action="{{ $property->exists ? route('properties.update', $property) : route('properties.store') }}"
-    class="space-y-5 pb-28 sm:pb-0"
+    class="space-y-5 pb-32 md:pb-0"
 >
     @csrf
     @if ($property->exists)
@@ -215,7 +215,7 @@
     </x-form-section>
 
     {{-- Action bar: sticky on mobile (above bottom-nav), inline on desktop --}}
-    <div class="fixed inset-x-0 bottom-16 sm:bottom-20 md:static md:bottom-auto z-30 md:z-auto bg-white/95 dark:bg-gray-900/95 md:bg-transparent dark:md:bg-transparent backdrop-blur md:backdrop-blur-none border-t md:border-0 border-ink-100 dark:border-ink-800 px-4 py-3 sm:px-6 md:p-0 md:pt-2 md:flex md:items-center md:justify-end md:gap-3">
+    <div class="fixed inset-x-0 bottom-[calc(4.5rem+env(safe-area-inset-bottom))] md:static md:bottom-auto z-30 md:z-auto bg-white/95 dark:bg-gray-900/95 md:bg-transparent dark:md:bg-transparent backdrop-blur md:backdrop-blur-none border-t md:border-0 border-ink-100 dark:border-ink-800 px-4 py-3 sm:px-6 md:p-0 md:pt-2 md:flex md:items-center md:justify-end md:gap-3">
         <a href="{{ $property->exists ? route('properties.show', $property) : route('properties.index') }}"
            class="block text-center md:inline px-4 py-2.5 text-sm font-semibold text-ink-600 dark:text-ink-300 hover:bg-surface-100 dark:hover:bg-gray-800 rounded-xl transition">Cancel</a>
         <x-primary-button type="submit" class="w-full md:w-auto mt-2 md:mt-0">
