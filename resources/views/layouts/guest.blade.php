@@ -2,7 +2,7 @@
 <html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
     <head>
         <meta charset="utf-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
         <meta name="csrf-token" content="{{ csrf_token() }}">
 
         <title>{{ config('app.name', 'DigiProper') }}</title>
@@ -19,7 +19,7 @@
         @vite(['resources/css/app.css', 'resources/js/app.js'])
     </head>
     <body class="font-sans text-gray-900 antialiased">
-        <div class="relative min-h-screen flex flex-col justify-center items-center px-4 py-12 overflow-hidden bg-gradient-to-br from-primary-50 via-white to-primary-100 dark:from-gray-950 dark:via-gray-900 dark:to-primary-950/40">
+        <div class="relative min-h-dvh flex flex-col justify-center items-center px-4 py-12 overflow-hidden bg-gradient-to-br from-primary-50 via-white to-primary-100 dark:from-gray-950 dark:via-gray-900 dark:to-primary-950/40">
             <div aria-hidden="true" class="pointer-events-none absolute -top-40 -left-40 h-[28rem] w-[28rem] rounded-full bg-primary-400/30 dark:bg-primary-500/20 blur-3xl"></div>
             <div aria-hidden="true" class="pointer-events-none absolute -bottom-40 -right-40 h-[32rem] w-[32rem] rounded-full bg-accent-400/30 dark:bg-accent-500/15 blur-3xl"></div>
             <div aria-hidden="true" class="pointer-events-none absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 h-[24rem] w-[24rem] rounded-full bg-sky-200/20 dark:bg-sky-500/10 blur-3xl"></div>
