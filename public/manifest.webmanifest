@@ -1,0 +1,76 @@
+{
+  "name": "DigiProper",
+  "short_name": "DigiProper",
+  "description": "Property management for Indian property owners",
+  "lang": "en-IN",
+  "dir": "ltr",
+  "start_url": "/dashboard",
+  "scope": "/",
+  "display": "standalone",
+  "display_override": ["standalone", "minimal-ui"],
+  "orientation": "portrait",
+  "background_color": "#fbfaff",
+  "theme_color": "#4b2fbf",
+  "categories": ["business", "productivity", "finance"],
+  "icons": [
+    {
+      "src": "/brand/digiproper-icon@256.png",
+      "sizes": "256x256",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/brand/digiproper-icon@512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/brand/digiproper-icon@1024.png",
+      "sizes": "1024x1024",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/brand/digiproper-square@512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    },
+    {
+      "src": "/brand/digiproper-square@1024.png",
+      "sizes": "1024x1024",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Dashboard",
+      "short_name": "Dashboard",
+      "description": "Open the DigiProper dashboard",
+      "url": "/dashboard",
+      "icons": [
+        { "src": "/brand/digiproper-icon@256.png", "sizes": "256x256", "type": "image/png" }
+      ]
+    },
+    {
+      "name": "Properties",
+      "short_name": "Properties",
+      "description": "View your properties",
+      "url": "/properties",
+      "icons": [
+        { "src": "/brand/digiproper-icon@256.png", "sizes": "256x256", "type": "image/png" }
+      ]
+    },
+    {
+      "name": "Add property",
+      "short_name": "Add",
+      "description": "Add a new property",
+      "url": "/properties/create",
+      "icons": [
+        { "src": "/brand/digiproper-icon@256.png", "sizes": "256x256", "type": "image/png" }
+      ]
+    }
+  ]
+}

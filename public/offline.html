@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en-IN">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+    <meta name="theme-color" content="#4b2fbf">
+    <title>Offline — DigiProper</title>
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+    <style>
+        :root {
+            --primary: #4b2fbf;
+            --primary-dark: #3d1da5;
+            --surface: #fbfaff;
+            --ink: #1f1538;
+            --ink-muted: #5a4a7a;
+            --ring: rgba(75, 47, 191, 0.18);
+        }
+        * { box-sizing: border-box; }
+        html, body {
+            margin: 0;
+            padding: 0;
+            min-height: 100dvh;
+            background: var(--surface);
+            color: var(--ink);
+            font-family: 'Figtree', system-ui, -apple-system, 'Segoe UI', sans-serif;
+            -webkit-font-smoothing: antialiased;
+        }
+        .stage {
+            min-height: 100dvh;
+            padding: max(env(safe-area-inset-top), 24px) 24px max(env(safe-area-inset-bottom), 24px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .card {
+            width: 100%;
+            max-width: 420px;
+            padding: 40px 28px 32px;
+            background: #ffffff;
+            border-radius: 24px;
+            box-shadow: 0 24px 60px -28px rgba(31, 21, 56, 0.35), 0 2px 6px rgba(31, 21, 56, 0.05);
+            text-align: center;
+        }
+        .icon {
+            width: 88px;
+            height: 88px;
+            margin: 0 auto 20px;
+            border-radius: 22px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            box-shadow: 0 10px 24px -10px var(--ring);
+        }
+        .icon svg { width: 56px; height: 56px; }
+        h1 {
+            margin: 0 0 10px;
+            font-size: 24px;
+            font-weight: 700;
+            letter-spacing: -0.01em;
+        }
+        p {
+            margin: 0 0 28px;
+            color: var(--ink-muted);
+            line-height: 1.55;
+            font-size: 15px;
+        }
+        button {
+            appearance: none;
+            border: none;
+            cursor: pointer;
+            width: 100%;
+            padding: 14px 20px;
+            font: inherit;
+            font-weight: 600;
+            font-size: 15px;
+            color: #ffffff;
+            background: var(--primary);
+            border-radius: 14px;
+            box-shadow: 0 8px 18px -8px var(--ring);
+            transition: transform 0.08s ease, background-color 0.15s ease;
+        }
+        button:hover { background: var(--primary-dark); }
+        button:active { transform: translateY(1px); }
+        .brand {
+            margin-top: 18px;
+            font-size: 12px;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            color: var(--ink-muted);
+        }
+        @media (prefers-color-scheme: dark) {
+            html, body { background: #0b0820; color: #ebe6f5; }
+            .card { background: #161033; box-shadow: 0 24px 60px -28px rgba(0, 0, 0, 0.6); }
+            p, .brand { color: #b4a8d8; }
+        }
+    </style>
+</head>
+<body>
+    <main class="stage">
+        <div class="card">
+            <div class="icon" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M3 9.5 12 3l9 6.5"/>
+                    <path d="M5 9v11h14V9"/>
+                    <path d="M10 20v-5h4v5"/>
+                </svg>
+            </div>
+            <h1>You're offline</h1>
+            <p>Looks like your connection dropped. DigiProper needs the internet to load your latest properties and documents.</p>
+            <button type="button" onclick="location.reload()">Try again</button>
+            <div class="brand">DigiProper</div>
+        </div>
+    </main>
+</body>
+</html>

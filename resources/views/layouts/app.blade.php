@@ -11,6 +11,17 @@
         <link rel="icon" type="image/svg+xml" href="{{ asset('favicon.svg') }}">
         <link rel="alternate icon" href="{{ asset('favicon.ico') }}">
 
+        <!-- PWA -->
+        <link rel="manifest" href="{{ asset('manifest.webmanifest') }}">
+        <meta name="theme-color" content="#4b2fbf" media="(prefers-color-scheme: light)">
+        <meta name="theme-color" content="#160641" media="(prefers-color-scheme: dark)">
+        <meta name="application-name" content="DigiProper">
+        <meta name="mobile-web-app-capable" content="yes">
+        <meta name="apple-mobile-web-app-capable" content="yes">
+        <meta name="apple-mobile-web-app-status-bar-style" content="default">
+        <meta name="apple-mobile-web-app-title" content="DigiProper">
+        <link rel="apple-touch-icon" href="{{ asset('brand/digiproper-icon@512.png') }}">
+
         <!-- Fonts -->
         <link rel="preconnect" href="https://fonts.bunny.net">
         <link href="https://fonts.bunny.net/css?family=figtree:400,500,600,700,800&display=swap" rel="stylesheet" />

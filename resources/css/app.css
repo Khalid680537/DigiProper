@@ -139,3 +139,12 @@
         font-size: 16px;
     }
 }
+
+/* Installed PWA: respect iOS notch / Android nav-bar safe areas.
+   Layouts already declare viewport-fit=cover. */
+@media (display-mode: standalone) {
+    body {
+        padding-top: env(safe-area-inset-top);
+        padding-bottom: env(safe-area-inset-bottom);
+    }
+}
