@@ -94,7 +94,7 @@ test('authenticated pages mount the command palette', function () {
         ->assertOk()
         ->assertSee('x-on:keydown.window.meta.k.prevent', false)
         ->assertSee('open-command-palette', false)
-        ->assertSee('window.commandPalette', false);
+        ->assertSee('x-data="commandPalette({', false);
 });
 
 test('the topbar search button dispatches the open event', function () {
@@ -109,5 +109,5 @@ test('the topbar search button dispatches the open event', function () {
 test('the command palette is not rendered for guests', function () {
     $this->get(route('login'))
         ->assertOk()
-        ->assertDontSee('window.commandPalette', false);
+        ->assertDontSee('x-data="commandPalette({', false);
 });

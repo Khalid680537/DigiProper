@@ -32,19 +32,25 @@ class GoogleAuthController extends Controller
                 ->withErrors(['google' => 'Sign-in session expired. Please try again.']);
         }
 
-        $user = DB::transaction(function () use ($googleUser): User {
+        $user = DB::transaction(function () use ($googleUser): ?User {
             $oauth = OauthAccount::where('provider', 'google')
                 ->where('provider_user_id', $googleUser->getId())
                 ->first();
 
-            $user = $oauth?->user
-                ?? User::firstWhere('email', $googleUser->getEmail())
-                ?? User::create([
+            $user = $oauth?->user;
+
+            if (! $user) {
+                if (User::where('email', $googleUser->getEmail())->exists()) {
+                    return null;
+                }
+
+                $user = User::create([
                     'name' => $googleUser->getName() ?: $googleUser->getNickname() ?: $googleUser->getEmail(),
                     'email' => $googleUser->getEmail(),
                     'email_verified_at' => now(),
                     'avatar_url' => $googleUser->getAvatar(),
                 ]);
+            }
 
             if ($user->avatar_url === null && $googleUser->getAvatar()) {
                 $user->forceFill(['avatar_url' => $googleUser->getAvatar()])->save();
@@ -69,6 +75,12 @@ class GoogleAuthController extends Controller
 
             return $user;
         });
+
+        if ($user === null) {
+            return redirect()->route('login')->withErrors([
+                'google' => 'An account with this email already exists. Please sign in and link your Google account from your profile.',
+            ]);
+        }
 
         Auth::login($user, remember: true);
         $request->session()->regenerate();

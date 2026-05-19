@@ -89,19 +89,22 @@ test('callback reuses existing oauth account and refreshes tokens', function () 
     $this->assertAuthenticatedAs($existing);
 });
 
-test('callback links to existing user by email when no oauth row exists', function () {
+test('callback refuses to merge into an existing email-only account', function () {
     $existing = User::factory()->create(['email' => 'ada@example.com', 'name' => 'Existing']);
 
     $provider = Mockery::mock(Provider::class);
     $provider->shouldReceive('user')->once()->andReturn(fakeGoogleUser());
     Socialite::shouldReceive('driver')->with('google')->andReturn($provider);
 
-    $this->get('/auth/google/callback')
-        ->assertRedirect(route('dashboard', absolute: false));
+    $response = $this->get('/auth/google/callback');
+
+    $response->assertRedirect(route('login'));
+    $response->assertSessionHasErrors('google');
+    $this->assertGuest();
 
     expect(User::count())->toBe(1);
-    expect(OauthAccount::where('user_id', $existing->id)->where('provider', 'google')->count())->toBe(1);
-    $this->assertAuthenticatedAs($existing->fresh());
+    expect(OauthAccount::count())->toBe(0);
+    expect($existing->fresh()->name)->toBe('Existing');
 });
 
 test('invalid state redirects to login with error', function () {

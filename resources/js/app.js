@@ -1,4 +1,5 @@
 import './bootstrap';
+import './command-palette';
 
 import Alpine from 'alpinejs';
 

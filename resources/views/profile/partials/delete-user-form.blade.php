@@ -31,6 +31,20 @@
                 </div>
             </div>
 
+            <div class="mt-5">
+                <x-input-label for="confirmation" :value="__('Type DELETE to confirm')" />
+                <x-text-input
+                    id="confirmation"
+                    name="confirmation"
+                    type="text"
+                    class="mt-1.5 w-full"
+                    autocomplete="off"
+                    placeholder="DELETE"
+                    required
+                />
+                <x-input-error :messages="$errors->get('confirmation')" class="mt-2" />
+            </div>
+
             <div class="mt-6 flex justify-end gap-3">
                 <button type="button" x-on:click="$dispatch('close')" class="px-4 py-2.5 text-sm font-semibold text-ink-600 dark:text-ink-300 hover:bg-surface-100 dark:hover:bg-gray-700 rounded-xl transition">
                     {{ __('Cancel') }}

@@ -50,12 +50,12 @@ test('email verification status is unchanged when the email address is unchanged
     expect($user->refresh()->email_verified_at)->not->toBeNull();
 });
 
-test('user can delete their account', function () {
+test('user can delete their account with typed confirmation', function () {
     $user = User::factory()->create();
 
     $response = $this
         ->actingAs($user)
-        ->delete('/profile');
+        ->delete('/profile', ['confirmation' => 'DELETE']);
 
     $response
         ->assertSessionHasNoErrors()
