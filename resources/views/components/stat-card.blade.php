@@ -4,6 +4,7 @@
     'hint' => null,
     'icon' => null,
     'tint' => 'primary',
+    'href' => null,
 ])
 
 @php
@@ -15,9 +16,13 @@
         'neutral' => ['bg' => 'bg-surface-100 dark:bg-gray-800',      'icon' => 'bg-white text-ink-600 dark:bg-gray-700 dark:text-ink-200',                     'stripe' => 'bg-ink-400'],
     ];
     $t = $tints[$tint] ?? $tints['primary'];
+    $tag = $href ? 'a' : 'div';
+    $extra = $href ? 'hover:shadow-glow-sm active:scale-[0.99] block' : '';
 @endphp
 
-<div {{ $attributes->merge(['class' => "relative rounded-3xl {$t['bg']} p-5 ring-1 ring-gray-900/5 dark:ring-white/10 shadow-soft hover:-translate-y-0.5 hover:shadow-soft-lg transition ease-spring duration-150 overflow-hidden"]) }}>
+<{{ $tag }}
+    @if ($href) href="{{ $href }}" @endif
+    {{ $attributes->merge(['class' => "relative rounded-3xl {$t['bg']} p-5 ring-1 ring-gray-900/5 dark:ring-white/10 shadow-soft hover:-translate-y-0.5 hover:shadow-soft-lg transition ease-spring duration-150 overflow-hidden {$extra}"]) }}>
     <span aria-hidden="true" class="absolute inset-y-0 left-0 w-1 {{ $t['stripe'] }}"></span>
 
     <div class="flex items-start justify-between gap-3">
@@ -35,4 +40,4 @@
             </span>
         @endif
     </div>
-</div>
+</{{ $tag }}>

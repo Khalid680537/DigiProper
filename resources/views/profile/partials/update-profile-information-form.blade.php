@@ -14,8 +14,8 @@
         <x-input-error :messages="$errors->get('email')" />
     </div>
 
-    <div class="flex items-center gap-4">
-        <x-primary-button>
+    <div class="flex flex-col-reverse sm:flex-row sm:items-center gap-4">
+        <x-primary-button class="w-full justify-center sm:w-auto">
             <x-icon name="check-circle" class="h-4 w-4" />
             {{ __('Save') }}
         </x-primary-button>

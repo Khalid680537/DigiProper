@@ -83,16 +83,16 @@
 
                 <div class="mt-auto flex items-center justify-between gap-2 pt-2 border-t border-ink-100 dark:border-ink-800">
                     <a href="{{ route('properties.documents.show', [$property, $document]) }}"
-                       class="inline-flex items-center gap-1 text-xs font-semibold text-primary-700 dark:text-primary-300 hover:underline">
-                        <x-icon name="arrow-down-tray" class="h-3.5 w-3.5" /> Open
+                       class="inline-flex items-center gap-1.5 rounded-xl bg-primary-50 dark:bg-primary-950/40 text-primary-700 dark:text-primary-300 hover:bg-primary-100 dark:hover:bg-primary-950/60 px-3 py-2 text-sm font-semibold transition">
+                        <x-icon name="arrow-down-tray" class="h-4 w-4" /> Open
                     </a>
                     <form method="POST" action="{{ route('properties.documents.destroy', [$property, $document]) }}"
                           onsubmit="return confirm('Delete this document?')">
                         @csrf
                         @method('DELETE')
-                        <button type="submit" class="inline-flex items-center gap-1 text-xs text-ink-400 hover:text-red-600 dark:hover:text-red-400 transition" aria-label="Delete document">
-                            <x-icon name="trash" class="h-3.5 w-3.5" /> Remove
-                        </button>
+                        <x-icon-button type="submit" tone="danger" aria-label="Delete document">
+                            <x-icon name="trash" class="h-5 w-5" />
+                        </x-icon-button>
                     </form>
                 </div>
             </div>

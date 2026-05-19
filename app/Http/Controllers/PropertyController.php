@@ -13,13 +13,30 @@ use Illuminate\View\View;
 
 class PropertyController extends Controller
 {
+    private const OCCUPANCY_VALUES = ['rented_out', 'self_use', 'vacant_plot', 'vacant_built'];
+
+    private const TENURE_VALUES = ['freehold', 'leasehold', 'rented_in', 'pagri', 'other'];
+
+    private const SORT_VALUES = ['name', 'value_desc', 'yield_desc', 'recent'];
+
     public function index(Request $request): View
     {
         $this->authorize('viewAny', Property::class);
 
-        $query = Property::query()->with('primaryPhoto')->orderBy('name');
-
         $q = trim((string) $request->query('q', ''));
+        $occupancy = in_array($request->query('occupancy'), self::OCCUPANCY_VALUES, true)
+            ? $request->query('occupancy')
+            : null;
+        $tenure = in_array($request->query('tenure'), self::TENURE_VALUES, true)
+            ? $request->query('tenure')
+            : null;
+        $hasDocuments = $request->query('has') === 'documents';
+        $sort = in_array($request->query('sort'), self::SORT_VALUES, true)
+            ? $request->query('sort')
+            : 'name';
+
+        $query = Property::query()->with('primaryPhoto');
+
         if ($q !== '') {
             $query->where(function ($w) use ($q) {
                 $w->where('name', 'like', "%{$q}%")
@@ -28,12 +45,41 @@ class PropertyController extends Controller
             });
         }
 
+        if ($occupancy !== null) {
+            $query->where('occupancy_status', $occupancy);
+        }
+
+        if ($tenure !== null) {
+            $query->where('tenure', $tenure);
+        }
+
+        if ($hasDocuments) {
+            $query->whereHas('documents');
+        }
+
+        match ($sort) {
+            'value_desc' => $query
+                ->orderByRaw('imputed_value_inr IS NULL')
+                ->orderByDesc('imputed_value_inr'),
+            'yield_desc' => $query
+                ->orderByRaw('COALESCE(yield_percent, CASE WHEN imputed_value_inr > 0 THEN rent_yearly_inr * 100.0 / imputed_value_inr ELSE NULL END) IS NULL')
+                ->orderByRaw('COALESCE(yield_percent, CASE WHEN imputed_value_inr > 0 THEN rent_yearly_inr * 100.0 / imputed_value_inr ELSE NULL END) DESC'),
+            'recent' => $query->orderByDesc('created_at'),
+            default => $query->orderBy('name'),
+        };
+
         /** @var LengthAwarePaginator $properties */
         $properties = $query->paginate(20)->withQueryString();
 
         return view('properties.index', [
             'properties' => $properties,
             'q' => $q,
+            'filters' => [
+                'occupancy' => $occupancy,
+                'tenure' => $tenure,
+                'has' => $hasDocuments ? 'documents' : null,
+                'sort' => $sort,
+            ],
         ]);
     }
 

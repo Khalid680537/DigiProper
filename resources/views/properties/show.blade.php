@@ -96,16 +96,21 @@
                 </div>
                 <div class="flex gap-2 shrink-0">
                     <button type="button" x-data @click="$dispatch('open-modal', 'property-share')"
-                            class="inline-flex items-center gap-2 rounded-2xl bg-white text-primary-700 hover:bg-white/90 px-4 py-2.5 text-sm font-semibold shadow-soft ring-1 ring-white/40 transition">
-                        <x-icon name="share" class="h-4 w-4" />
+                            aria-label="Share property"
+                            class="inline-flex items-center justify-center gap-2 h-11 w-11 sm:h-auto sm:w-auto sm:px-4 sm:py-2.5 rounded-full sm:rounded-2xl bg-white text-primary-700 hover:bg-white/90 text-sm font-semibold shadow-soft ring-1 ring-white/40 transition">
+                        <x-icon name="share" class="h-5 w-5 sm:h-4 sm:w-4" />
                         <span class="hidden sm:inline">Share</span>
                     </button>
-                    <a href="{{ route('properties.edit', $property) }}" class="inline-flex items-center gap-2 rounded-2xl bg-white/15 hover:bg-white/25 text-white px-4 py-2.5 text-sm font-semibold backdrop-blur-sm ring-1 ring-white/20 transition">
-                        <x-icon name="pencil" class="h-4 w-4" /> Edit
+                    <a href="{{ route('properties.edit', $property) }}"
+                       aria-label="Edit property"
+                       class="inline-flex items-center justify-center gap-2 h-11 w-11 sm:h-auto sm:w-auto sm:px-4 sm:py-2.5 rounded-full sm:rounded-2xl bg-white/15 hover:bg-white/25 text-white text-sm font-semibold backdrop-blur-sm ring-1 ring-white/20 transition">
+                        <x-icon name="pencil" class="h-5 w-5 sm:h-4 sm:w-4" />
+                        <span class="hidden sm:inline">Edit</span>
                     </a>
                     <button type="button" x-data @click="$dispatch('open-modal', 'confirm-property-delete')"
-                            class="inline-flex items-center gap-2 rounded-2xl bg-red-500/90 hover:bg-red-500 text-white px-4 py-2.5 text-sm font-semibold ring-1 ring-red-300/40 transition">
-                        <x-icon name="trash" class="h-4 w-4" />
+                            aria-label="Delete property"
+                            class="inline-flex items-center justify-center gap-2 h-11 w-11 sm:h-auto sm:w-auto sm:px-4 sm:py-2.5 rounded-full sm:rounded-2xl bg-red-500/90 hover:bg-red-500 text-white text-sm font-semibold ring-1 ring-red-300/40 transition">
+                        <x-icon name="trash" class="h-5 w-5 sm:h-4 sm:w-4" />
                         <span class="hidden sm:inline">Delete</span>
                     </button>
                 </div>
@@ -173,23 +178,23 @@
                 <x-section-card title="Overview" icon="information-circle">
                     <dl class="grid grid-cols-2 sm:grid-cols-3 gap-3">
                         <div class="rounded-2xl bg-surface-100 dark:bg-gray-900/40 p-4">
-                            <dt class="text-[10px] font-semibold uppercase tracking-wide text-ink-500 dark:text-ink-400">Title holder</dt>
+                            <dt class="text-[11px] sm:text-xs font-semibold uppercase tracking-wide text-ink-500 dark:text-ink-400">Title holder</dt>
                             <dd class="mt-1 text-sm font-medium text-ink-900 dark:text-ink-50 break-words">{{ $property->title_holder ?: '—' }}</dd>
                         </div>
                         <div class="rounded-2xl bg-surface-100 dark:bg-gray-900/40 p-4">
-                            <dt class="text-[10px] font-semibold uppercase tracking-wide text-ink-500 dark:text-ink-400">RERA number</dt>
+                            <dt class="text-[11px] sm:text-xs font-semibold uppercase tracking-wide text-ink-500 dark:text-ink-400">RERA number</dt>
                             <dd class="mt-1 text-sm font-medium text-ink-900 dark:text-ink-50 break-words">{{ $property->rera_number ?: '—' }}</dd>
                         </div>
                         <div class="rounded-2xl bg-surface-100 dark:bg-gray-900/40 p-4">
-                            <dt class="text-[10px] font-semibold uppercase tracking-wide text-ink-500 dark:text-ink-400">Authority</dt>
+                            <dt class="text-[11px] sm:text-xs font-semibold uppercase tracking-wide text-ink-500 dark:text-ink-400">Authority</dt>
                             <dd class="mt-1 text-sm font-medium text-ink-900 dark:text-ink-50 break-words">{{ $property->tenure_authority ?: '—' }}</dd>
                         </div>
                         <div class="rounded-2xl bg-surface-100 dark:bg-gray-900/40 p-4">
-                            <dt class="text-[10px] font-semibold uppercase tracking-wide text-ink-500 dark:text-ink-400">Tenant / occupant</dt>
+                            <dt class="text-[11px] sm:text-xs font-semibold uppercase tracking-wide text-ink-500 dark:text-ink-400">Tenant / occupant</dt>
                             <dd class="mt-1 text-sm font-medium text-ink-900 dark:text-ink-50 break-words">{{ $property->tenant_or_occupant ?: '—' }}</dd>
                         </div>
                         <div class="rounded-2xl bg-surface-100 dark:bg-gray-900/40 p-4">
-                            <dt class="text-[10px] font-semibold uppercase tracking-wide text-ink-500 dark:text-ink-400">Area</dt>
+                            <dt class="text-[11px] sm:text-xs font-semibold uppercase tracking-wide text-ink-500 dark:text-ink-400">Area</dt>
                             <dd class="mt-1 text-sm font-medium text-ink-900 dark:text-ink-50">
                                 @if ($property->area_value)
                                     {{ rtrim(rtrim((string) $property->area_value, '0'), '.') }} {{ $property->area_unit ?: '' }}
@@ -199,7 +204,7 @@
                             </dd>
                         </div>
                         <div class="rounded-2xl bg-surface-100 dark:bg-gray-900/40 p-4 col-span-2 sm:col-span-3">
-                            <dt class="text-[10px] font-semibold uppercase tracking-wide text-ink-500 dark:text-ink-400">Construction</dt>
+                            <dt class="text-[11px] sm:text-xs font-semibold uppercase tracking-wide text-ink-500 dark:text-ink-400">Construction</dt>
                             <dd class="mt-1 text-sm font-medium text-ink-900 dark:text-ink-50 break-words">{{ $property->construction ?: '—' }}</dd>
                         </div>
                     </dl>
@@ -261,6 +266,16 @@
                                             <p class="mt-1 text-xs text-ink-500 dark:text-ink-400">{{ $contact['notes'] }}</p>
                                         @endif
                                     </div>
+                                    @if (! empty($contact['phone']))
+                                        <x-icon-button
+                                            tone="primary"
+                                            :href="'tel:'.preg_replace('/[^+0-9]/', '', $contact['phone'])"
+                                            aria-label="Call {{ $contact['name'] ?? 'contact' }}"
+                                            class="shrink-0"
+                                        >
+                                            <x-icon name="phone" class="h-5 w-5" />
+                                        </x-icon-button>
+                                    @endif
                                 </li>
                             @endforeach
                         </ul>
