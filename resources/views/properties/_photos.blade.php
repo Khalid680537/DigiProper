@@ -54,7 +54,8 @@
                             </form>
                         @endunless
                         <form method="POST" action="{{ route('properties.photos.destroy', [$property, $photo]) }}"
-                              onsubmit="return confirm('Delete this photo?')">
+                              x-data
+                              x-on:submit.prevent="if (confirm('Delete this photo?')) $event.target.submit()">
                             @csrf
                             @method('DELETE')
                             <x-icon-button type="submit" tone="overlay" size="sm" aria-label="Delete photo" class="hover:bg-red-500/90">

@@ -87,7 +87,8 @@
                         <x-icon name="arrow-down-tray" class="h-4 w-4" /> Open
                     </a>
                     <form method="POST" action="{{ route('properties.documents.destroy', [$property, $document]) }}"
-                          onsubmit="return confirm('Delete this document?')">
+                          x-data
+                          x-on:submit.prevent="if (confirm('Delete this document?')) $event.target.submit()">
                         @csrf
                         @method('DELETE')
                         <x-icon-button type="submit" tone="danger" aria-label="Delete document">
