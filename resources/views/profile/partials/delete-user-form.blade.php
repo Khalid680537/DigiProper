@@ -6,6 +6,7 @@
     <x-danger-button
         x-data=""
         x-on:click.prevent="$dispatch('open-modal', 'confirm-user-deletion')"
+        class="w-full justify-center sm:w-auto"
     >
         <x-icon name="trash" class="h-4 w-4" />
         {{ __('Delete Account') }}

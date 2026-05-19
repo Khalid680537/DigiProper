@@ -35,52 +35,56 @@
 
         {{-- Stat strip --}}
         <div class="grid grid-cols-2 lg:grid-cols-4 gap-4">
-            <x-stat-card icon="building-office" tint="primary" label="Properties" :value="number_format($totalCount)" />
-            <x-stat-card icon="currency-rupee" tint="accent" label="Total value">
+            <x-stat-card icon="building-office" tint="primary" label="Properties" :value="number_format($totalCount)"
+                :href="route('properties.index')" />
+            <x-stat-card icon="currency-rupee" tint="accent" label="Total value"
+                :href="route('properties.index', ['sort' => 'value_desc'])">
                 <x-slot name="value"><x-inr :amount="$totalValue" /></x-slot>
             </x-stat-card>
-            <x-stat-card icon="banknotes" tint="emerald" label="Rent / yr">
+            <x-stat-card icon="banknotes" tint="emerald" label="Rent / yr"
+                :href="route('properties.index', ['occupancy' => 'rented_out'])">
                 <x-slot name="value"><x-inr :amount="$totalRent" /></x-slot>
             </x-stat-card>
             <x-stat-card icon="sparkles" tint="sky" label="Avg yield"
                 :value="$averageYield !== null ? $averageYield.'%' : '—'"
-                hint="Rent ÷ value" />
+                hint="Rent ÷ value"
+                :href="route('properties.index', ['sort' => 'yield_desc'])" />
         </div>
 
         {{-- Quick action tiles --}}
         <div class="grid grid-cols-2 lg:grid-cols-4 gap-3">
             <a href="{{ route('properties.create') }}"
-               class="group rounded-3xl p-4 sm:p-5 bg-gradient-to-br from-primary-500 to-primary-700 text-white shadow-soft hover:-translate-y-0.5 hover:shadow-glow transition ease-spring duration-150 ring-1 ring-white/10">
+               class="group rounded-3xl p-4 sm:p-5 bg-gradient-to-br from-primary-500 to-primary-700 text-white shadow-soft hover:-translate-y-0.5 hover:shadow-glow transition ease-spring duration-150 ring-1 ring-white/10 active:scale-[0.98]">
                 <span class="h-10 w-10 rounded-xl bg-white/20 flex items-center justify-center">
                     <x-icon name="plus" class="h-5 w-5" />
                 </span>
                 <p class="mt-3 text-sm font-semibold">Add property</p>
                 <p class="text-xs text-white/80">Capture every detail</p>
             </a>
-            <a href="{{ route('properties.index') }}"
-               class="group rounded-3xl p-4 sm:p-5 bg-gradient-to-br from-accent-500 to-accent-700 text-white shadow-soft hover:-translate-y-0.5 hover:shadow-glow transition ease-spring duration-150 ring-1 ring-white/10">
+            <a href="{{ route('properties.index', ['has' => 'documents']) }}"
+               class="group rounded-3xl p-4 sm:p-5 bg-gradient-to-br from-accent-500 to-accent-700 text-white shadow-soft hover:-translate-y-0.5 hover:shadow-glow transition ease-spring duration-150 ring-1 ring-white/10 active:scale-[0.98]">
                 <span class="h-10 w-10 rounded-xl bg-white/20 flex items-center justify-center">
                     <x-icon name="folder-open" class="h-5 w-5" />
                 </span>
                 <p class="mt-3 text-sm font-semibold">Documents</p>
                 <p class="text-xs text-white/80">Title deeds, leases</p>
             </a>
-            <a href="{{ route('properties.index') }}"
-               class="group rounded-3xl p-4 sm:p-5 bg-gradient-to-br from-emerald-500 to-emerald-700 text-white shadow-soft hover:-translate-y-0.5 hover:shadow-glow transition ease-spring duration-150 ring-1 ring-white/10">
+            <a href="{{ route('properties.index', ['sort' => 'recent']) }}"
+               class="group rounded-3xl p-4 sm:p-5 bg-gradient-to-br from-emerald-500 to-emerald-700 text-white shadow-soft hover:-translate-y-0.5 hover:shadow-glow transition ease-spring duration-150 ring-1 ring-white/10 active:scale-[0.98]">
                 <span class="h-10 w-10 rounded-xl bg-white/20 flex items-center justify-center">
-                    <x-icon name="eye" class="h-5 w-5" />
+                    <x-icon name="calendar" class="h-5 w-5" />
                 </span>
-                <p class="mt-3 text-sm font-semibold">View portfolio</p>
-                <p class="text-xs text-white/80">All properties</p>
+                <p class="mt-3 text-sm font-semibold">Recent</p>
+                <p class="text-xs text-white/80">Latest additions</p>
             </a>
-            <a href="{{ route('properties.index') }}"
-               class="group rounded-3xl p-4 sm:p-5 bg-gradient-to-br from-sky-500 to-sky-700 text-white shadow-soft hover:-translate-y-0.5 hover:shadow-glow transition ease-spring duration-150 ring-1 ring-white/10">
+            <button type="button" x-data x-on:click="$dispatch('open-command-palette')"
+                    class="group text-left rounded-3xl p-4 sm:p-5 bg-gradient-to-br from-sky-500 to-sky-700 text-white shadow-soft hover:-translate-y-0.5 hover:shadow-glow transition ease-spring duration-150 ring-1 ring-white/10 active:scale-[0.98]">
                 <span class="h-10 w-10 rounded-xl bg-white/20 flex items-center justify-center">
                     <x-icon name="search" class="h-5 w-5" />
                 </span>
                 <p class="mt-3 text-sm font-semibold">Search</p>
                 <p class="text-xs text-white/80">Find by city or name</p>
-            </a>
+            </button>
         </div>
 
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
@@ -108,14 +112,15 @@
                     </div>
                 @else
                     {{-- Mobile carousel --}}
-                    <div class="lg:hidden flex gap-3 overflow-x-auto snap-x snap-mandatory scrollbar-hide -mx-5 px-5 pb-1">
+                    <div class="lg:hidden relative">
+                        <div class="flex gap-3 overflow-x-auto snap-x snap-mandatory scrollbar-hide -mx-5 px-5 pb-1">
                         @foreach ($recent as $property)
                             @php
                                 $bgInit = strtoupper(mb_substr($property->name, 0, 1));
                                 $recentPrimary = $property->primaryPhoto;
                             @endphp
                             <a href="{{ route('properties.show', $property) }}"
-                               class="shrink-0 w-72 snap-start rounded-2xl bg-surface-50 dark:bg-gray-900/50 ring-1 ring-ink-100 dark:ring-ink-800 p-4 hover:ring-primary-300 dark:hover:ring-primary-700 transition">
+                               class="shrink-0 w-[78vw] max-w-[300px] snap-start rounded-2xl bg-surface-50 dark:bg-gray-900/50 ring-1 ring-ink-100 dark:ring-ink-800 p-4 hover:ring-primary-300 dark:hover:ring-primary-700 transition active:scale-[0.99]">
                                 <div class="flex items-center gap-3">
                                     @if ($recentPrimary)
                                         <img src="{{ route('properties.photos.show', [$property, $recentPrimary]) }}"
@@ -135,6 +140,13 @@
                                 </div>
                             </a>
                         @endforeach
+                        </div>
+                        @if ($recent->count() > 1)
+                            <div aria-hidden="true" class="pointer-events-none absolute right-0 top-0 bottom-1 w-8 bg-gradient-to-l from-white dark:from-gray-800 to-transparent"></div>
+                            <p class="mt-2 text-[11px] text-ink-400 dark:text-ink-500 inline-flex items-center gap-1">
+                                <x-icon name="arrow-right" class="h-3 w-3" /> Swipe for more
+                            </p>
+                        @endif
                     </div>
 
                     {{-- Desktop vertical list --}}

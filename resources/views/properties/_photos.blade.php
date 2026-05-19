@@ -43,28 +43,23 @@
                         </span>
                     @endif
 
-                    <div class="absolute inset-x-0 bottom-0 flex items-center justify-end gap-1 p-2 bg-gradient-to-t from-ink-950/80 to-transparent opacity-0 group-hover:opacity-100 transition">
+                    <div class="absolute inset-x-0 bottom-0 flex items-center justify-end gap-1.5 p-1.5 bg-gradient-to-t from-ink-950/80 via-ink-950/40 to-transparent">
                         @unless ($photo->is_primary)
                             <form method="POST" action="{{ route('properties.photos.makePrimary', [$property, $photo]) }}">
                                 @csrf
                                 @method('PATCH')
-                                <button type="submit"
-                                        class="inline-flex items-center gap-1 rounded-lg bg-white/95 hover:bg-white text-ink-800 px-2.5 py-1.5 text-[11px] font-semibold shadow-soft transition"
-                                        title="Set as primary thumbnail">
-                                    <x-icon name="check-circle" class="h-3.5 w-3.5" />
-                                    Set primary
-                                </button>
+                                <x-icon-button type="submit" tone="overlay" size="sm" aria-label="Set as primary photo">
+                                    <x-icon name="check-circle" class="h-5 w-5" />
+                                </x-icon-button>
                             </form>
                         @endunless
                         <form method="POST" action="{{ route('properties.photos.destroy', [$property, $photo]) }}"
                               onsubmit="return confirm('Delete this photo?')">
                             @csrf
                             @method('DELETE')
-                            <button type="submit"
-                                    class="inline-flex items-center gap-1 rounded-lg bg-white/95 hover:bg-red-50 text-red-600 px-2.5 py-1.5 text-[11px] font-semibold shadow-soft transition"
-                                    title="Delete photo">
-                                <x-icon name="trash" class="h-3.5 w-3.5" />
-                            </button>
+                            <x-icon-button type="submit" tone="overlay" size="sm" aria-label="Delete photo" class="hover:bg-red-500/90">
+                                <x-icon name="trash" class="h-5 w-5" />
+                            </x-icon-button>
                         </form>
                     </div>
                 </div>
@@ -87,7 +82,7 @@
 
             <div>
                 <x-input-label for="photo_file" value="Photo *" />
-                <input type="file" id="photo_file" name="file" accept="image/*" required
+                <input type="file" id="photo_file" name="file" accept="image/*" capture="environment" required
                        class="mt-1.5 block w-full text-sm text-ink-700 dark:text-ink-200 file:mr-3 file:py-2 file:px-4 file:rounded-xl file:border-0 file:bg-accent-100 dark:file:bg-accent-900/40 file:text-accent-700 dark:file:text-accent-200 file:font-semibold hover:file:bg-accent-200 dark:hover:file:bg-accent-900/60 transition" />
                 <x-input-error :messages="$errors->get('file')" class="mt-2" />
             </div>

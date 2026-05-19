@@ -122,10 +122,10 @@
             <x-input-label for="construction" value="Construction" />
             <x-text-input id="construction" name="construction" type="text" class="mt-1.5" :value="old('construction', $property->construction)" placeholder="e.g. Basement + Ground Floor + First + Second" />
         </div>
-        <div class="grid grid-cols-3 gap-4">
-            <div class="col-span-2">
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+            <div class="sm:col-span-2">
                 <x-input-label for="area_value" value="Area" />
-                <x-text-input id="area_value" name="area_value" type="number" step="0.01" min="0" class="mt-1.5" :value="old('area_value', $property->area_value)" />
+                <x-text-input id="area_value" name="area_value" type="number" inputmode="decimal" step="0.01" min="0" class="mt-1.5" :value="old('area_value', $property->area_value)" />
                 <x-input-error :messages="$errors->get('area_value')" />
             </div>
             <div>
@@ -172,20 +172,36 @@
             class="space-y-3"
         >
             <template x-for="(c, i) in contacts" :key="i">
-                <div class="rounded-2xl ring-1 ring-ink-100 dark:ring-ink-800 p-4 bg-surface-50 dark:bg-gray-900/40">
-                    <div class="grid grid-cols-1 sm:grid-cols-12 gap-3 items-start">
-                        <input type="text" :name="`contacts[${i}][name]`" x-model="c.name" placeholder="Name"
-                            class="sm:col-span-3 block w-full rounded-xl border-ink-200 dark:border-ink-700 dark:bg-gray-900 dark:text-ink-100 placeholder:text-ink-400 focus:border-primary-500 focus:ring-4 focus:ring-primary-500/15 px-3.5 py-2 text-sm shadow-sm" />
-                        <input type="text" :name="`contacts[${i}][phone]`" x-model="c.phone" placeholder="+91 9811011555"
-                            class="sm:col-span-3 block w-full rounded-xl border-ink-200 dark:border-ink-700 dark:bg-gray-900 dark:text-ink-100 placeholder:text-ink-400 focus:border-primary-500 focus:ring-4 focus:ring-primary-500/15 px-3.5 py-2 text-sm shadow-sm" />
-                        <input type="text" :name="`contacts[${i}][role]`" x-model="c.role" placeholder="Role"
-                            class="sm:col-span-2 block w-full rounded-xl border-ink-200 dark:border-ink-700 dark:bg-gray-900 dark:text-ink-100 placeholder:text-ink-400 focus:border-primary-500 focus:ring-4 focus:ring-primary-500/15 px-3.5 py-2 text-sm shadow-sm" />
-                        <input type="text" :name="`contacts[${i}][notes]`" x-model="c.notes" placeholder="Notes"
-                            class="sm:col-span-3 block w-full rounded-xl border-ink-200 dark:border-ink-700 dark:bg-gray-900 dark:text-ink-100 placeholder:text-ink-400 focus:border-primary-500 focus:ring-4 focus:ring-primary-500/15 px-3.5 py-2 text-sm shadow-sm" />
-                        <button type="button" @click="remove(i)" class="sm:col-span-1 inline-flex items-center justify-center rounded-xl text-ink-400 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-950/40 h-10 transition" aria-label="Remove contact">
-                            <x-icon name="trash" class="h-4 w-4" />
-                        </button>
+                <div class="relative rounded-2xl ring-1 ring-ink-100 dark:ring-ink-800 p-4 bg-surface-50 dark:bg-gray-900/40">
+                    <p class="text-[11px] font-semibold uppercase tracking-wide text-ink-500 dark:text-ink-400 mb-3" x-text="`Contact ${i + 1}`"></p>
+                    <div class="grid grid-cols-1 sm:grid-cols-12 gap-3 sm:gap-x-3 sm:gap-y-2">
+                        <label class="sm:col-span-4 block">
+                            <span class="text-xs font-semibold text-ink-600 dark:text-ink-300">Name</span>
+                            <input type="text" :name="`contacts[${i}][name]`" x-model="c.name" placeholder="e.g. Rajesh Kumar"
+                                class="mt-1 block w-full rounded-xl border-ink-200 dark:border-ink-700 dark:bg-gray-900 dark:text-ink-100 placeholder:text-ink-400 focus:border-primary-500 focus:ring-4 focus:ring-primary-500/15 px-3.5 py-2.5 text-base sm:text-sm shadow-sm" />
+                        </label>
+                        <label class="sm:col-span-4 block">
+                            <span class="text-xs font-semibold text-ink-600 dark:text-ink-300">Phone</span>
+                            <input type="tel" inputmode="tel" :name="`contacts[${i}][phone]`" x-model="c.phone" placeholder="+91 98110 11555"
+                                class="mt-1 block w-full rounded-xl border-ink-200 dark:border-ink-700 dark:bg-gray-900 dark:text-ink-100 placeholder:text-ink-400 focus:border-primary-500 focus:ring-4 focus:ring-primary-500/15 px-3.5 py-2.5 text-base sm:text-sm shadow-sm" />
+                        </label>
+                        <label class="sm:col-span-4 block">
+                            <span class="text-xs font-semibold text-ink-600 dark:text-ink-300">Role</span>
+                            <input type="text" :name="`contacts[${i}][role]`" x-model="c.role" placeholder="e.g. Caretaker"
+                                class="mt-1 block w-full rounded-xl border-ink-200 dark:border-ink-700 dark:bg-gray-900 dark:text-ink-100 placeholder:text-ink-400 focus:border-primary-500 focus:ring-4 focus:ring-primary-500/15 px-3.5 py-2.5 text-base sm:text-sm shadow-sm" />
+                        </label>
+                        <label class="sm:col-span-12 block">
+                            <span class="text-xs font-semibold text-ink-600 dark:text-ink-300">Notes</span>
+                            <input type="text" :name="`contacts[${i}][notes]`" x-model="c.notes" placeholder="Anything worth remembering"
+                                class="mt-1 block w-full rounded-xl border-ink-200 dark:border-ink-700 dark:bg-gray-900 dark:text-ink-100 placeholder:text-ink-400 focus:border-primary-500 focus:ring-4 focus:ring-primary-500/15 px-3.5 py-2.5 text-base sm:text-sm shadow-sm" />
+                        </label>
                     </div>
+                    <button type="button" @click="remove(i)"
+                            class="mt-3 sm:mt-0 sm:absolute sm:top-3 sm:right-3 w-full sm:w-auto inline-flex items-center justify-center gap-1.5 rounded-xl text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-950/40 h-11 sm:h-9 px-3 text-sm font-semibold transition"
+                            aria-label="Remove contact">
+                        <x-icon name="trash" class="h-4 w-4" />
+                        <span class="sm:hidden">Remove contact</span>
+                    </button>
                 </div>
             </template>
             <button type="button" @click="add()"
@@ -214,13 +230,15 @@
         </label>
     </x-form-section>
 
-    {{-- Action bar: sticky on mobile (above bottom-nav), inline on desktop --}}
-    <div class="fixed inset-x-0 bottom-[calc(4.5rem+env(safe-area-inset-bottom))] md:static md:bottom-auto z-30 md:z-auto bg-white/95 dark:bg-gray-900/95 md:bg-transparent dark:md:bg-transparent backdrop-blur md:backdrop-blur-none border-t md:border-0 border-ink-100 dark:border-ink-800 px-4 py-3 sm:px-6 md:p-0 md:pt-2 md:flex md:items-center md:justify-end md:gap-3">
-        <a href="{{ $property->exists ? route('properties.show', $property) : route('properties.index') }}"
-           class="block text-center md:inline px-4 py-2.5 text-sm font-semibold text-ink-600 dark:text-ink-300 hover:bg-surface-100 dark:hover:bg-gray-800 rounded-xl transition">Cancel</a>
-        <x-primary-button type="submit" class="w-full md:w-auto mt-2 md:mt-0">
-            <x-icon name="check-circle" class="h-4 w-4" />
-            {{ $property->exists ? 'Save changes' : 'Create property' }}
-        </x-primary-button>
+    {{-- Action bar: sticky on mobile, inline on desktop --}}
+    <div class="fixed inset-x-0 bottom-[env(safe-area-inset-bottom)] md:static md:bottom-auto z-30 md:z-auto bg-white/95 dark:bg-gray-900/95 md:bg-transparent dark:md:bg-transparent backdrop-blur md:backdrop-blur-none border-t md:border-0 border-ink-100 dark:border-ink-800 px-4 py-3 sm:px-6 md:p-0 md:pt-2">
+        <div class="grid grid-cols-2 gap-3 md:flex md:items-center md:justify-end md:gap-3">
+            <a href="{{ $property->exists ? route('properties.show', $property) : route('properties.index') }}"
+               class="inline-flex items-center justify-center px-4 py-3 md:py-2.5 text-sm font-semibold text-ink-700 dark:text-ink-200 bg-surface-100 dark:bg-gray-800 hover:bg-surface-200 dark:hover:bg-gray-700 md:bg-transparent md:hover:bg-surface-100 dark:md:bg-transparent dark:md:hover:bg-gray-800 rounded-xl transition">Cancel</a>
+            <x-primary-button type="submit" class="w-full md:w-auto justify-center">
+                <x-icon name="check-circle" class="h-4 w-4" />
+                {{ $property->exists ? 'Save changes' : 'Create property' }}
+            </x-primary-button>
+        </div>
     </div>
 </form>
