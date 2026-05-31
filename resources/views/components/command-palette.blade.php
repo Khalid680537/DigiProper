@@ -33,6 +33,7 @@
         x-transition:leave-start="opacity-100 translate-y-0 scale-100"
         x-transition:leave-end="opacity-0 -translate-y-2 scale-95"
         class="fixed inset-x-0 top-20 z-50 mx-auto w-full max-w-2xl px-4"
+        x-on:click.self="close()"
         x-on:keydown.down.prevent="moveActive(1)"
         x-on:keydown.up.prevent="moveActive(-1)"
         x-on:keydown.enter.prevent="activate()"
@@ -53,6 +54,14 @@
                 />
                 <span x-show="loading" class="text-xs text-ink-400 dark:text-ink-500">Searching…</span>
                 <kbd class="hidden sm:inline-flex items-center px-1.5 py-0.5 rounded bg-surface-100 dark:bg-gray-900 ring-1 ring-ink-200 dark:ring-ink-700 text-[10px] font-semibold text-ink-500 dark:text-ink-400">esc</kbd>
+                <button
+                    type="button"
+                    x-on:click="close()"
+                    aria-label="Close search"
+                    class="shrink-0 rounded-xl p-1.5 text-ink-400 hover:text-ink-700 hover:bg-surface-100 dark:hover:text-ink-200 dark:hover:bg-gray-700 transition"
+                >
+                    <x-icon name="x-mark" class="h-5 w-5" />
+                </button>
             </div>
 
             {{-- Result list --}}

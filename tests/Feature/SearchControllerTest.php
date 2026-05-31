@@ -97,6 +97,16 @@ test('authenticated pages mount the command palette', function () {
         ->assertSee('x-data="commandPalette({', false);
 });
 
+test('the command palette renders a close button so mobile users are not trapped', function () {
+    $user = User::factory()->create();
+
+    $this->actingAs($user)
+        ->get(route('dashboard'))
+        ->assertOk()
+        ->assertSee('aria-label="Close search"', false)
+        ->assertSee('x-on:click.self="close()"', false);
+});
+
 test('the topbar search button dispatches the open event', function () {
     $user = User::factory()->create();
 
